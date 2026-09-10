@@ -1,0 +1,341 @@
+{% extends "base.html.j2" %}
+{% block titulo %}Observatório Nacional da Formação em Psicologia{% endblock %}
+
+{% block cabeca %}
+<link rel="stylesheet" href="{{ depth }}static/vendor/leaflet/leaflet.css">
+{% endblock %}
+
+{% block conteudo %}
+
+{#
+  Herói editorial. Os números vêm todos de `panorama`, nunca escritos à mão no
+  texto: uma manchete com número digitado sobrevive à mudança do dado e vira a
+  primeira coisa errada que o leitor encontra.
+#}
+<section class="heroi">
+  <div class="heroi-interno">
+    <p class="heroi-etiqueta">Censo da Educação Superior {{ panorama.ano_censo }} · CPC {{ panorama.ciclo_cpc }} · CNES · CadSUAS</p>
+    <h1 class="heroi-manchete">
+      A Psicologia se ensina em
+      <strong>{{ panorama.municipios_oferta | numero }}</strong>
+      dos {{ panorama.municipios_total | numero }} municípios brasileiros,
+      e em todas as {{ panorama.n_ufs_com_oferta }} unidades da federação.
+    </h1>
+    <p class="heroi-lede">
+      São {{ panorama.vagas_total | numero }} vagas anuais e
+      {{ panorama.matriculas | numero }} matrículas.
+      {% if panorama.pct_ead is not none %}
+      Praticamente tudo presencial: apenas {{ panorama.pct_ead | numero(1) }}%
+      das vagas são a distância — {{ panorama.vagas_ead | numero }} de
+      {{ panorama.vagas_total | numero }} —, e
+      {{ panorama.n_ufs_sem_ead }} das {{ panorama.n_ufs }} unidades da
+      federação não têm nenhuma.
+      {% endif %}
+    </p>
+    <p class="heroi-nota">
+      Este observatório não estima nada. Onde não há fonte oficial para um
+      recorte, a página diz <em>sem dados</em> — e o mapa fica cinza. Onde a
+      fonte foi lida e o valor é zero, a página diz <em>zero</em>, que é
+      medida, não lacuna.
+    </p>
+  </div>
+</section>
+
+<section class="secao">
+  <h2 class="secao-titulo">Panorama nacional</h2>
+  <div class="kpis">
+    <div class="kpi">
+      <span class="kpi-valor">{{ panorama.vagas_total | numero }}</span>
+      <span class="kpi-rotulo">Vagas anuais</span>
+      <span class="kpi-nota">{{ panorama.vagas_presencial | numero }} presenciais ·
+        {{ panorama.vagas_ead | numero }} EaD</span>
+    </div>
+    <div class="kpi">
+      <span class="kpi-valor">{{ panorama.matriculas | numero }}</span>
+      <span class="kpi-rotulo">Matrículas</span>
+      <span class="kpi-nota">{{ panorama.concluintes | numero }} concluintes no ano</span>
+    </div>
+    <div class="kpi">
+      <span class="kpi-valor">{{ panorama.municipios_oferta | numero }}</span>
+      <span class="kpi-rotulo">Municípios com curso presencial</span>
+      <span class="kpi-nota">{{ panorama.municipios_deserto | numero }} sem nenhum</span>
+    </div>
+    <div class="kpi">
+      <span class="kpi-valor">{{ panorama.cursos_avaliados | numero }}</span>
+      <span class="kpi-rotulo">Cursos avaliados no CPC {{ panorama.ciclo_cpc }}</span>
+      <span class="kpi-nota">em {{ panorama.ufs_avaliadas }} das {{ panorama.n_ufs }} UFs</span>
+    </div>
+    <div class="kpi">
+      <span class="kpi-valor">
+        {%- if panorama.municipios_com_psicologo is not none -%}
+          {{ panorama.municipios_com_psicologo | numero }}
+        {%- else -%}<span class="sem-dados">sem dados</span>{%- endif -%}
+      </span>
+      <span class="kpi-rotulo">Municípios com psicólogo no SUS</span>
+      <span class="kpi-nota">CNES — força de trabalho</span>
+    </div>
+    <div class="kpi">
+      <span class="kpi-valor">
+        {%- if panorama.municipios_com_raps is not none -%}
+          {{ panorama.municipios_com_raps | numero }}
+        {%- else -%}<span class="sem-dados">sem dados</span>{%- endif -%}
+      </span>
+      <span class="kpi-rotulo">Municípios com atenção psicossocial</span>
+      <span class="kpi-nota">CNES — serviço 115</span>
+    </div>
+    <div class="kpi">
+      <span class="kpi-valor">
+        {%- if panorama.municipios_com_creas is not none -%}
+          {{ panorama.municipios_com_creas | numero }}
+        {%- else -%}<span class="sem-dados">sem dados</span>{%- endif -%}
+      </span>
+      <span class="kpi-rotulo">Municípios com CREAS</span>
+      <span class="kpi-nota">CadSUAS — assistência social</span>
+    </div>
+    <div class="kpi">
+      <span class="kpi-valor">
+        {%- if panorama.psicologos_sus is not none -%}
+          {{ panorama.psicologos_sus | numero }}
+        {%- else -%}<span class="sem-dados">sem dados</span>{%- endif -%}
+      </span>
+      <span class="kpi-rotulo">Psicólogos no SUS</span>
+      <span class="kpi-nota">profissionais distintos, não vínculos</span>
+    </div>
+  </div>
+</section>
+
+{#
+  Seção própria para a EaD. A modalidade responde por 0,2% da capacidade, e
+  quase todo indicador derivado dela vale zero. Recolhê-los aqui mantém as
+  tabelas principais legíveis sem esconder o achado — que é justamente a
+  ausência da modalidade neste curso.
+
+  A lista de indicadores sai do CATÁLOGO, pela categoria, não de uma lista de
+  chaves escrita aqui: um indicador de EaD acrescentado depois entra sozinho.
+#}
+<section class="secao secao-ead">
+  <h2 class="secao-titulo">Ensino a distância</h2>
+  <p class="secao-lede">
+    Psicologia é, na prática, um curso presencial.
+    {{ panorama.vagas_ead | numero }} das
+    {{ panorama.vagas_total | numero }} vagas anuais são a distância —
+    {{ panorama.pct_ead | numero(1) }}% —, e os
+    {{ panorama.cursos_avaliados | numero }} cursos avaliados no CPC
+    {{ panorama.ciclo_cpc }} são <strong>todos</strong> presenciais, sem uma
+    única exceção. Para comparar: em Fonoaudiologia a EaD é 43% da capacidade
+    e alcança 618 municípios por polo; em Administração passa de 67% e alcança
+    mais de três mil.
+  </p>
+  <div class="kpis kpis-compacto">
+    <div class="kpi">
+      <span class="kpi-valor">{{ panorama.vagas_ead | numero }}</span>
+      <span class="kpi-rotulo">Vagas a distância</span>
+      <span class="kpi-nota">contra {{ panorama.vagas_presencial | numero }} presenciais</span>
+    </div>
+    <div class="kpi">
+      <span class="kpi-valor">{{ panorama.n_ufs_sem_ead }}</span>
+      <span class="kpi-rotulo">UFs sem nenhuma vaga EaD</span>
+      <span class="kpi-nota">de {{ panorama.n_ufs }} — zero medido, não lacuna</span>
+    </div>
+    <div class="kpi">
+      <span class="kpi-valor">{{ panorama.polos_registros | numero }}</span>
+      <span class="kpi-rotulo">Polos EaD</span>
+      <span class="kpi-nota">em {{ panorama.polos_municipios | numero }} municípios</span>
+    </div>
+    <div class="kpi">
+      <span class="kpi-valor">{{ panorama.n_ufs_sem_polo }}</span>
+      <span class="kpi-rotulo">UFs sem nenhum polo</span>
+      <span class="kpi-nota">
+        {%- if panorama.ufs_sem_polo -%}{{ panorama.ufs_sem_polo | join(', ') }}
+        {%- else -%}todas têm ao menos um{%- endif -%}
+      </span>
+    </div>
+  </div>
+  <div class="tabela-rolagem">
+    <table id="tabela-ead" data-ordenavel>
+      <caption class="so-leitor">Indicadores de ensino a distância por unidade da federação</caption>
+      <thead>
+        <tr>
+          <th scope="col">UF</th>
+          {% for ind in catalogo if ind.cat == categoria_ead and ind.key in campos_ead %}
+          <th scope="col">{{ ind.sigla }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for sigla, d in ufs_ordenadas %}
+        <tr>
+          <td data-valor="{{ sigla }}">
+            <a href="{{ depth }}uf/{{ sigla }}.html">{{ nomes_uf[sigla] }}</a>
+          </td>
+          {% for campo in campos_ead %}
+          <td class="num" data-campo="{{ campo }}"
+              data-valor="{{ d[campo] if d[campo] is not none else '' }}"></td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="nota">
+    Os zeros desta tabela foram medidos. Um estado com <code>0</code> vagas EaD
+    foi apurado e não tem nenhuma; um estado <em>sem dados</em> seria outro
+    caso, e apareceria escrito assim. Confundir os dois apagaria o achado mais
+    interessante deste observatório.
+  </p>
+</section>
+
+<section class="secao">
+  <div class="secao-cabecalho">
+    <h2 class="secao-titulo">Mapa nacional</h2>
+    <label class="campo">
+      Indicador
+      <select id="seletor-mapa">
+        {% for cat in categorias %}
+        <optgroup label="{{ cat }}">
+          {% for ind in catalogo if ind.cat == cat %}
+          <option value="{{ ind.key }}"{% if ind.key == 'ICT' %} selected{% endif %}>{{ ind.nome }}</option>
+          {% endfor %}
+        </optgroup>
+        {% endfor %}
+      </select>
+    </label>
+  </div>
+  <p id="mapa-explicacao" class="secao-lede"></p>
+  <div id="mapa" class="mapa"></div>
+  <div id="legenda" class="legenda"></div>
+  <p class="nota">
+    Malhas territoriais do IBGE, servidas localmente — o mapa não carrega
+    imagem de terceiros e funciona offline depois da primeira visita. Clique
+    num estado para abrir a página dele.
+  </p>
+</section>
+
+<section class="secao">
+  <div class="secao-cabecalho">
+    <h2 class="secao-titulo">Estados</h2>
+    <button class="botao" data-exportar="#tabela-ufs" data-nome="ufs-psicologia.csv">
+      Baixar CSV
+    </button>
+    <button class="botao botao-fantasma" data-exportar-xlsx="#tabela-ufs"
+            data-nome="ufs-psicologia.xlsx" data-aba="Estados">Baixar XLSX</button>
+  </div>
+  <div class="tabela-rolagem">
+    <table id="tabela-ufs" data-ordenavel>
+      <caption class="so-leitor">Indicadores de Psicologia por unidade da federação</caption>
+      <thead>
+        <tr>
+          <th scope="col">UF</th>
+          <th scope="col">Vagas totais</th>
+          <th scope="col">Municípios com curso</th>
+          <th scope="col">ICT</th>
+          <th scope="col">IAF</th>
+          <th scope="col">CPC</th>
+          <th scope="col">ICAP</th>
+          <th scope="col">ICRP</th>
+          <th scope="col">ICAS</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for sigla, d in ufs_ordenadas %}
+        <tr>
+          <td data-valor="{{ sigla }}">
+            <a href="{{ depth }}uf/{{ sigla }}.html">{{ nomes_uf[sigla] }}</a>
+          </td>
+          {% for campo in ['vagas_total', 'municipios_oferta', 'ICT', 'IAF', 'CPC',
+                           'ICAP', 'ICRP', 'ICAS'] %}
+          <td class="num" data-valor="{{ d[campo] if d[campo] is not none else '' }}"
+              data-campo="{{ campo }}">{{ '' }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="tabela-dica">Role a tabela para o lado para ver as demais colunas.</p>
+  <p class="nota">
+    ICAP, ICRP e ICAS medem coisas diferentes — há profissional, há serviço de
+    saúde mental, há serviço de assistência social — e por isso aparecem em
+    colunas separadas. Fundi-los num índice de cobertura exigiria decidir
+    quanto vale cada um, e essa decisão ficaria escondida dentro de um número
+    de aparência objetiva.
+  </p>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ depth }}static/vendor/leaflet/leaflet.js"></script>
+<script>
+const UFS = {{ ufs_json }};
+const DEPTH = {{ depth | tojson }};
+const NOMES_UF = {{ nomes_uf | json }};
+
+/* Preenche as células a partir do catálogo, em vez de formatar no Jinja.
+   Formatar no template exigiria repetir as casas decimais de cada indicador
+   no HTML — que é exatamente a duplicação que o catálogo existe para evitar. */
+document.querySelectorAll('td[data-campo]').forEach(function (td) {
+  const campo = td.dataset.campo;
+  const bruto = td.dataset.valor;
+  const valor = bruto === '' ? null : parseFloat(bruto);
+  td.textContent = fmt(valor, campo);
+  if (valor === null) td.classList.add('sem-dados');
+});
+
+const mapaEl = document.getElementById('mapa');
+const seletor = document.getElementById('seletor-mapa');
+const legendaEl = document.getElementById('legenda');
+const explicacaoEl = document.getElementById('mapa-explicacao');
+let mapa = null;
+let camada = null;
+let malha = null;
+
+function siglaDaFeicao(f) {
+  const p = f.properties || {};
+  return (p.sigla || p.SIGLA || p.sigla_uf || p.SIGLA_UF || '').toUpperCase();
+}
+
+function redesenhar() {
+  const chave = seletor.value;
+  const valores = Object.keys(UFS).map(s => UFS[s][chave]);
+  const meta = INDICADOR_META[chave] || {};
+  const usaEscalaDinamica = meta.min === null || meta.min === undefined;
+  const corDinamica = usaEscalaDinamica ? escalaDinamica(valores) : null;
+
+  const item = GLOSSARIO.filter(g => g.key === chave)[0];
+  explicacaoEl.textContent = item ? item.oque : '';
+
+  if (camada) { camada.remove(); camada = null; }
+  camada = desenharMalha(mapa, malha, {
+    chave: chave,
+    valorDe: f => {
+      const uf = UFS[siglaDaFeicao(f)];
+      return uf ? uf[chave] : null;
+    },
+    rotuloDe: f => {
+      const sigla = siglaDaFeicao(f);
+      return NOMES_UF[sigla] || sigla;
+    },
+    corDe: corDinamica ? corDinamica : undefined,
+    aoClicar: f => {
+      const sigla = siglaDaFeicao(f);
+      if (sigla) window.location.href = DEPTH + 'uf/' + sigla + '.html';
+    },
+  });
+  montarLegenda(legendaEl, chave, valores);
+}
+
+fetch(DEPTH + 'static/geo/brasil.json')
+  .then(r => r.json())
+  .then(function (geo) {
+    malha = geo;
+    mapa = criarMapa(mapaEl);
+    redesenhar();
+    seletor.addEventListener('change', redesenhar);
+  })
+  .catch(function () {
+    mapaEl.innerHTML = '<p class="vazio">Não foi possível carregar a malha ' +
+      'territorial. Os dados continuam disponíveis na tabela abaixo.</p>';
+  });
+</script>
+{% endblock %}

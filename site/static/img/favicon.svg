@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Observatório Nacional da Formação em Psicologia">
+  <rect width="64" height="64" rx="12" fill="#262B54"/>
+  <!-- Ψ: a marca é a letra psi, desenhada em traço, não escrita em fonte.
+       A taça e a haste em papel; os dois braços nas cores secundárias, para
+       repetir os três matizes da paleta sem acrescentar um quarto. -->
+  <g fill="none" stroke-width="4.5" stroke-linecap="round">
+    <path d="M17 30a15 15 0 0 0 30 0" stroke="#F3F4FA"/>
+    <path d="M32 18v34" stroke="#F3F4FA"/>
+    <path d="M17 30V17" stroke="#7784BC"/>
+    <path d="M47 30V17" stroke="#E8A94A"/>
+    <path d="M24 52h16" stroke="#F3F4FA"/>
+  </g>
+</svg>

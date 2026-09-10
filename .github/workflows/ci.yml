@@ -1,0 +1,226 @@
+name: CI — validação, build e publicação
+
+# O CI valida e publica a partir dos dados JÁ VERSIONADOS em data/.
+# Não reextrai as fontes: a leitura do CNES leva perto de uma hora por causa do
+# FTP do DATASUS, e um runner que reextrai a cada push transforma cada correção
+# de CSS numa espera de uma hora — além de tornar o build dependente de a fonte
+# externa estar de pé naquele minuto. A atualização de dados é um ato
+# deliberado, feito com `python etl/pipeline.py`, e chega aqui como commit.
+
+# O deploy é AUTOMÁTICO, por escolha do mantenedor: todo push na main que
+# passar pelos portões vai ao ar. Os portões são a única barreira, e por isso
+# não são poucos — portão GO das fórmulas, portão da estatística, catálogo,
+# três suítes de teste e a guarda de riqueza. Se qualquer um reprovar, o job de
+# publicação nem começa: `needs: validar` garante isso.
+#
+# Consequência que vale ter em mente ao trabalhar neste repositório: um commit
+# de dados na main publica os dados. Para experimentar sem publicar, use um
+# branch e um pull request — a validação roda igual, a publicação não.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    # Segunda-feira, 06:00 UTC — verifica se alguma fonte publicou edição nova.
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+    inputs:
+      acao:
+        description: 'O que fazer nesta execução'
+        type: choice
+        default: publicar
+        options:
+          - publicar          # valida e publica no GitHub Pages
+          - so-validar        # roda portões e testes, não publica
+          - verificar-fontes  # só checa se as fontes têm edição nova
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  issues: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+
+  # ──────────────────────────────────────────────────────────────
+  # Portão de qualidade + build
+  # ──────────────────────────────────────────────────────────────
+  validar:
+    if: >-
+      github.event_name == 'push' ||
+      github.event_name == 'pull_request' ||
+      (github.event_name == 'workflow_dispatch' &&
+       inputs.acao != 'verificar-fontes')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # A guarda de riqueza compara com `git show HEAD:data/nacional.json`.
+          # Com fetch-depth 1 em push isso funciona; sem histórico algum, ela
+          # degrada para "sem versão anterior" e não protege nada.
+          fetch-depth: 2
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: "Portão GO — fórmulas dos índices"
+        run: python etl/indices.py --autoteste
+
+      - name: "Portão GO — estatística (Spearman, p, regressão)"
+        run: python site/estatistica.py
+
+      - name: "Catálogo de indicadores"
+        run: python site/catalogo.py
+
+      - name: "Testes de catálogo"
+        run: python tests/test_catalogo.py
+
+      - name: "Testes de integridade"
+        run: python tests/test_validacao.py
+
+      - name: "Testes do verificador de fontes"
+        run: python tests/test_check_fontes.py
+
+      - name: "Guarda de riqueza"
+        run: python etl/pipeline.py --so-riqueza
+
+      - name: "Registro de anterioridade autoral confere"
+        run: python etl/registro_autoral.py --verificar
+        continue-on-error: true
+
+      - name: "Gerar site"
+        run: python site/build.py
+
+      - name: "Conferir o que foi gerado"
+        run: |
+          echo "UFs:        $(ls site/dist/uf/*.html | wc -l)"
+          echo "Municípios: $(find site/dist/municipio -name '*.html' | wc -l)"
+          echo "Páginas:    $(find site/dist -name '*.html' | wc -l)"
+          test -f site/dist/index.html
+          test -f site/dist/dados/indicadores.csv
+          test -f site/dist/static/js/indicadores.js
+          test "$(ls site/dist/uf/*.html | wc -l)" -eq 27
+
+      # Só empacota quando a publicação vai mesmo acontecer. Empacotar em pull
+      # request custaria minutos em toda validação e deixaria pendurado um
+      # artefato pronto para ir ao ar sem que ninguém tivesse aprovado o merge.
+      - name: Empacotar para o Pages
+        if: >-
+          github.ref == 'refs/heads/main' &&
+          (github.event_name == 'push' ||
+           (github.event_name == 'workflow_dispatch' && inputs.acao == 'publicar'))
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/dist
+
+  # ──────────────────────────────────────────────────────────────
+  # Publicação no GitHub Pages — AUTOMÁTICA a cada push na main
+  #
+  # `needs: validar` é o que torna isso seguro: reprovou um portão, não publica.
+  # ──────────────────────────────────────────────────────────────
+  publicar:
+    needs: validar
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'push' ||
+       (github.event_name == 'workflow_dispatch' && inputs.acao == 'publicar'))
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4
+
+  # ──────────────────────────────────────────────────────────────
+  # Verificação semanal de frescor das fontes
+  # ──────────────────────────────────────────────────────────────
+  verificar-fontes:
+    if: >-
+      github.event_name == 'schedule' ||
+      (github.event_name == 'workflow_dispatch' &&
+       inputs.acao == 'verificar-fontes')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Verificar fontes
+        id: check
+        run: python etl/pipeline.py --check-only
+        continue-on-error: true
+
+      - name: Abrir issue quando houver edição nova
+        if: steps.check.outputs.fontes_novas == 'true'
+        uses: actions/github-script@v7
+        env:
+          DETALHE: ${{ steps.check.outputs.fontes_novas_detalhe }}
+        with:
+          script: |
+            const detalhe = process.env.DETALHE || 'edição nova detectada';
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Fonte atualizada — ${detalhe}`,
+              body: [
+                `O verificador semanal encontrou: **${detalhe}**.`,
+                '',
+                'Para atualizar:',
+                '```bash',
+                'python etl/pipeline.py --ano <ano do Censo>',
+                'python site/build.py',
+                '```',
+                '',
+                'O pipeline só segue se o portão GO, os testes e a guarda de',
+                'riqueza passarem. Confira as âncoras em `tests/test_validacao.py`:',
+                'uma edição nova muda os números de propósito, e as constantes',
+                'mudam junto, no mesmo commit.',
+                '',
+                '**Atenção:** neste repositório o deploy é automático. Um push',
+                'na `main` com os dados novos publica os dados novos. Se quiser',
+                'olhar antes, mande para um branch e abra um pull request — a',
+                'validação roda igual e nada vai ao ar.',
+              ].join('\n'),
+              labels: ['atualização-dados'],
+            })
+
+      # Indeterminado NÃO é ausente. Uma verificação que não conseguiu
+      # concluir precisa aparecer, senão o silêncio passa por "tudo em dia" —
+      # que é exatamente a falha que este projeto herdou documentada.
+      - name: Abrir issue quando a verificação for indeterminada
+        if: steps.check.outputs.fontes_indeterminadas == 'true'
+        uses: actions/github-script@v7
+        env:
+          DETALHE: ${{ steps.check.outputs.fontes_indeterminadas_detalhe }}
+        with:
+          script: |
+            const detalhe = process.env.DETALHE || 'verificação indeterminada';
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Verificação de fonte indeterminada — ${detalhe}`,
+              body: [
+                `Não foi possível verificar: **${detalhe}**.`,
+                '',
+                'Isto **não** significa que a fonte não mudou — significa que',
+                'a verificação não concluiu. Confira manualmente antes de',
+                'assumir que está tudo em dia.',
+              ].join('\n'),
+              labels: ['verificação-indeterminada'],
+            })

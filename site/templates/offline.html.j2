@@ -1,0 +1,41 @@
+{% extends "base.html.j2" %}
+{% block titulo %}Sem conexão — Observatório Nacional da Formação em Psicologia{% endblock %}
+{% block descricao %}Esta página do observatório ainda não foi guardada para uso offline.{% endblock %}
+
+{% block conteudo %}
+
+<section class="cabecalho-uf">
+  <h1>Esta página ainda não está disponível offline</h1>
+  <p class="secao-lede">
+    Você está sem conexão, e esta página específica não foi guardada em cache na
+    sua última visita. O site funciona offline, mas só para o que já foi
+    aberto — não seria honesto guardar as 664 páginas no seu telefone sem
+    avisar.
+  </p>
+</section>
+
+<section class="secao">
+  <h2 class="secao-titulo">O que continua funcionando sem internet</h2>
+  <ul class="lista">
+    <li><a href="{{ depth }}index.html">Panorama nacional</a> — mapa e tabela dos estados</li>
+    <li><a href="{{ depth }}comparar.html">Comparar estados</a></li>
+    <li><a href="{{ depth }}indice.html">Índice sintético</a></li>
+    <li><a href="{{ depth }}correlacoes.html">Correlações</a></li>
+    <li><a href="{{ depth }}serie.html">Série histórica</a></li>
+    <li><a href="{{ depth }}glossario.html">Glossário dos indicadores</a></li>
+  </ul>
+  <p class="nota">
+    As páginas de estado e de município que você já visitou também ficam
+    guardadas. As demais voltam quando a conexão voltar.
+  </p>
+</section>
+
+<section class="secao">
+  <p>
+    <button type="button" class="botao" onclick="location.reload()">
+      Tentar de novo
+    </button>
+  </p>
+</section>
+
+{% endblock %}

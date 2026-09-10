@@ -1,0 +1,248 @@
+{% extends "base.html.j2" %}
+{% block titulo %}Correlações — Observatório Nacional da Formação em Psicologia{% endblock %}
+{% block descricao %}Correlações de Spearman entre indicadores estaduais, com significância e n declarados, e duas regressões múltiplas.{% endblock %}
+
+{% block conteudo %}
+
+<section class="cabecalho-uf">
+  <h1>Correlações e regressões</h1>
+  <p class="secao-lede">
+    Correlação de <strong>Spearman</strong>, sobre postos. As distribuições
+    aqui são pequenas e muito assimétricas: a capacidade do maior estado é
+    ordens de grandeza acima da do menor, e Pearson seria dominado por esses
+    extremos. Spearman responde à pergunta que interessa — quando um indicador
+    sobe, o outro tende a subir?
+  </p>
+  <div class="aviso">
+    <strong>Como ler.</strong> Cada célula traz ρ, o valor de p e o
+    <em>n</em> — o número de estados em que ambos os indicadores existem. Com n
+    perto de 24, um |ρ| de 0,40 já cruza p&nbsp;&lt;&nbsp;0,05 e ainda assim
+    descreve uma nuvem larga. Correlação não é causa, e com este n ela também
+    não é precisão. Nenhum par foi imputado: quando falta um dos dois valores,
+    o estado sai da conta e o n cai.
+  </div>
+</section>
+
+<section class="secao">
+  <div class="secao-cabecalho">
+    <h2 class="secao-titulo">Pares ordenados por força</h2>
+    <label class="campo">
+      <input type="checkbox" id="so-significativos" checked>
+      Mostrar só p &lt; 0,05
+    </label>
+  </div>
+  <div class="tabela-rolagem">
+    <table id="tabela-correlacoes" data-ordenavel>
+      <caption class="so-leitor">Correlações de Spearman entre pares de indicadores</caption>
+      <thead>
+        <tr>
+          <th scope="col">Indicador A</th>
+          <th scope="col">Indicador B</th>
+          <th scope="col">ρ (Spearman)</th>
+          <th scope="col">p</th>
+          <th scope="col">n</th>
+        </tr>
+      </thead>
+      <tbody id="corpo-correlacoes"></tbody>
+    </table>
+  </div>
+  <p class="tabela-dica">Role a tabela para o lado para ver as demais colunas.</p>
+  <p class="nota">
+    {{ correlacoes | length }} pares calculados entre {{ eixos | length }}
+    indicadores. A lista é curta de propósito: cruzar todos os 60 indicadores
+    daria mais de 1.700 pares, dos quais dezenas passariam de p&nbsp;&lt;&nbsp;0,05
+    só pelo número de tentativas. Isso não é análise, é pesca.
+  </p>
+</section>
+
+<section class="secao">
+  <h2 class="secao-titulo">Dispersão</h2>
+  <div class="painel">
+    <label class="campo">Eixo X <select id="eixo-x"></select></label>
+    <label class="campo">Eixo Y <select id="eixo-y"></select></label>
+  </div>
+  <div class="grafico-caixa"><canvas id="grafico-dispersao"></canvas></div>
+  <p id="dispersao-resumo" class="nota"></p>
+</section>
+
+<section class="secao">
+  <h2 class="secao-titulo">Regressão múltipla</h2>
+  <p class="secao-lede">
+    Dois modelos, formulados <em>antes</em> de rodar qualquer número. Escolher o
+    modelo depois de olhar os resultados é a maneira mais fácil de encontrar
+    significância onde não há.
+  </p>
+  {% for m in modelos %}
+  <article class="modelo">
+    <h3>{{ m.pergunta }}</h3>
+    <p class="modelo-resposta">
+      Variável resposta: <strong>{{ m.resposta }}</strong> ·
+      n = {{ m.n }} estados ·
+      R² = {{ '%.3f'|format(m.r2) }}
+      {% if m.r2_ajustado is not none %}· R² ajustado = {{ '%.3f'|format(m.r2_ajustado) }}{% endif %}
+    </p>
+    <table class="tabela-simples">
+      <thead><tr><th scope="col">Variável</th><th scope="col">Coeficiente</th></tr></thead>
+      <tbody>
+        <tr><td>Intercepto</td><td class="num">{{ '%.4f'|format(m.intercepto) }}</td></tr>
+        {% for c in m.coeficientes %}
+        <tr><td>{{ c.variavel }}</td><td class="num">{{ '%.4f'|format(c.beta) }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <p class="nota">
+      Só entraram os {{ m.n }} estados em que a resposta e todos os preditores
+      existem. Estados com qualquer preditor ausente foram descartados, não
+      preenchidos com a média — imputar puxaria o coeficiente para zero e faria
+      o modelo parecer mais certo do que é.
+    </p>
+  </article>
+  {% else %}
+  <p class="aviso">
+    Não há observações completas suficientes para estimar os modelos neste
+    ciclo. Nenhum resultado parcial é publicado no lugar.
+  </p>
+  {% endfor %}
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ depth }}static/vendor/chart.umd.min.js"></script>
+<script>
+const CORRELACOES = {{ correlacoes_json }};
+const UFS = {{ ufs_json }};
+const NOMES_UF = {{ nomes_uf | json }};
+const EIXOS = {{ eixos | json }};
+
+function corDoRho(rho) {
+  const t = (rho + 1) / 2;                 /* -1..1 -> 0..1 */
+  return RDBU[Math.min(RDBU.length - 1, Math.floor((1 - t) * RDBU.length))];
+}
+
+function montarCorrelacoes() {
+  const soSignificativos = document.getElementById('so-significativos').checked;
+  const corpo = document.getElementById('corpo-correlacoes');
+  corpo.innerHTML = '';
+  CORRELACOES.forEach(function (c) {
+    if (soSignificativos && !c.significativo) return;
+    const tr = document.createElement('tr');
+
+    const tdA = document.createElement('td');
+    tdA.textContent = c.rotulo_a;
+    tdA.title = nomeCompleto(c.a);
+    tdA.dataset.valor = c.rotulo_a;
+    const tdB = document.createElement('td');
+    tdB.textContent = c.rotulo_b;
+    tdB.title = nomeCompleto(c.b);
+    tdB.dataset.valor = c.rotulo_b;
+
+    const tdRho = document.createElement('td');
+    tdRho.className = 'num celula-cor';
+    tdRho.dataset.valor = c.rho;
+    tdRho.textContent = c.rho.toLocaleString('pt-BR',
+      { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+    tdRho.style.background = corDoRho(c.rho);
+
+    const tdP = document.createElement('td');
+    tdP.className = 'num';
+    tdP.dataset.valor = c.p;
+    tdP.textContent = c.p < 0.001 ? '< 0,001'
+      : c.p.toLocaleString('pt-BR', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+    if (!c.significativo) tdP.classList.add('nao-significativo');
+
+    const tdN = document.createElement('td');
+    tdN.className = 'num';
+    tdN.dataset.valor = c.n;
+    tdN.textContent = c.n;
+
+    [tdA, tdB, tdRho, tdP, tdN].forEach(td => tr.appendChild(td));
+    corpo.appendChild(tr);
+  });
+}
+
+document.getElementById('so-significativos')
+  .addEventListener('change', montarCorrelacoes);
+montarCorrelacoes();
+
+/* ---------------- dispersão ---------------- */
+
+const selX = document.getElementById('eixo-x');
+const selY = document.getElementById('eixo-y');
+EIXOS.forEach(function (k) {
+  [selX, selY].forEach(function (sel) {
+    const o = document.createElement('option');
+    o.value = k;
+    o.textContent = nomeCompleto(k);
+    sel.appendChild(o);
+  });
+});
+/* Os padrões precisam EXISTIR em EIXOS. `E` era o padrão herdado do
+   observatório de Fonoaudiologia e aqui não está mais na lista — é 1 − ICT por
+   definição, e o par ICT×E devolveria rho = −1 encabeçando a lista de achados.
+   Um `value` inexistente não levanta erro: o select cai calado na primeira
+   opção, e o leitor vê um gráfico que ninguém escolheu. */
+selX.value = EIXOS.indexOf('ICT') >= 0 ? 'ICT' : EIXOS[0];
+selY.value = EIXOS.indexOf('ICAP') >= 0 ? 'ICAP' : EIXOS[1];
+
+let grafico = null;
+
+function montarDispersao() {
+  const kx = selX.value;
+  const ky = selY.value;
+  const pontos = Object.keys(UFS).map(function (s) {
+    return { s: s, x: UFS[s][kx], y: UFS[s][ky] };
+  }).filter(p => p.x !== null && p.x !== undefined && p.y !== null && p.y !== undefined);
+
+  const par = CORRELACOES.filter(c =>
+    (c.a === kx && c.b === ky) || (c.a === ky && c.b === kx))[0];
+  const resumo = document.getElementById('dispersao-resumo');
+  if (par) {
+    resumo.textContent = 'ρ = ' + par.rho.toFixed(3) +
+      ' · p = ' + (par.p < 0.001 ? '< 0,001' : par.p.toFixed(3)) +
+      ' · n = ' + par.n +
+      (par.significativo ? '' : ' · não significativo a 5%');
+  } else if (kx === ky) {
+    resumo.textContent = 'Mesmo indicador nos dois eixos.';
+  } else {
+    resumo.textContent = 'Par fora da lista calculada; ' + pontos.length +
+      ' estados têm os dois valores.';
+  }
+
+  if (grafico) grafico.destroy();
+  grafico = new Chart(document.getElementById('grafico-dispersao'), {
+    type: 'scatter',
+    data: {
+      datasets: [{
+        label: nomeCompleto(ky) + ' × ' + nomeCompleto(kx),
+        data: pontos.map(p => ({ x: p.x, y: p.y, s: p.s })),
+        backgroundColor: '#2A7D74',
+        pointRadius: 5,
+      }],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function (c) {
+              const p = c.raw;
+              return NOMES_UF[p.s] + ': ' + fmt(p.x, kx) + ' / ' + fmt(p.y, ky);
+            },
+          },
+        },
+      },
+      scales: {
+        x: { title: { display: true, text: nomeCompleto(kx) } },
+        y: { title: { display: true, text: nomeCompleto(ky) } },
+      },
+    },
+  });
+}
+
+selX.addEventListener('change', montarDispersao);
+selY.addEventListener('change', montarDispersao);
+montarDispersao();
+</script>
+{% endblock %}

@@ -1,0 +1,15 @@
+# Fim de linha uniforme no repositório.
+#
+# Sem isto, arquivos editados em modo texto no Windows entram com CRLF e o
+# mesmo conteúdo produz resumos SHA-256 diferentes conforme o sistema em que é
+# lido — o que quebrava a conferência do registro de anterioridade no CI.
+# `registro_autoral.py` normaliza por conta própria, mas ter os bytes iguais em
+# toda parte evita a divergência na origem.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.webp binary
+*.woff2 binary
+*.xlsx binary
+*.zip binary

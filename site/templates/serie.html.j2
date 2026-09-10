@@ -1,0 +1,195 @@
+{% extends "base.html.j2" %}
+{% block titulo %}Série histórica — Observatório Nacional da Formação em Psicologia{% endblock %}
+{% block descricao %}Como a oferta de Psicologia mudou entre as edições do Censo da Educação Superior.{% endblock %}
+
+{% block conteudo %}
+
+<section class="cabecalho-uf">
+  <h1>Série histórica</h1>
+  {% if serie and serie.anos %}
+  <p class="secao-lede">
+    Comparação entre as edições {{ serie.anos | join(' e ') }} do Censo da
+    Educação Superior, restrita aos campos que são de fato comparáveis entre
+    edições. O INEP reclassificou os cursos na CINE e republicou as edições
+    anteriores, então o rótulo <em>Psicologia</em> significa a mesma coisa
+    nos dois anos — o que não vale para todo campo do cadastro.
+  </p>
+  {% else %}
+  <p class="secao-lede">
+    A série ainda não foi gerada. Rode <code>python etl/serie.py</code> para
+    extrair as edições anteriores do Censo e preencher esta página.
+  </p>
+  {% endif %}
+</section>
+
+{% if serie and serie.anos %}
+
+<section class="secao">
+  <h2 class="secao-titulo">Brasil</h2>
+  <div class="tabela-rolagem">
+    <table class="tabela-simples">
+      <thead>
+        <tr>
+          <th scope="col">Indicador</th>
+          {% for ano in serie.anos %}<th scope="col">{{ ano }}</th>{% endfor %}
+          <th scope="col">Variação</th>
+        </tr>
+      </thead>
+      <tbody id="corpo-brasil"></tbody>
+    </table>
+  </div>
+</section>
+
+<section class="secao">
+  <div class="secao-cabecalho">
+    <h2 class="secao-titulo">Por estado</h2>
+    <label class="campo">
+      Indicador
+      <select id="seletor-serie"></select>
+    </label>
+  </div>
+  <div class="grafico-caixa"><canvas id="grafico-serie"></canvas></div>
+  <div class="tabela-rolagem">
+    <table id="tabela-serie" data-ordenavel>
+      <caption class="so-leitor">Série histórica por estado, entre edições do Censo</caption>
+      <thead>
+        <tr>
+          <th scope="col">Estado</th>
+          {% for ano in serie.anos %}<th scope="col">{{ ano }}</th>{% endfor %}
+          <th scope="col">Variação</th>
+        </tr>
+      </thead>
+      <tbody id="corpo-serie"></tbody>
+    </table>
+  </div>
+  <p class="tabela-dica">Role a tabela para o lado para ver as demais colunas.</p>
+  <p class="nota">
+    Variação em pontos percentuais quando o indicador já é percentual; em
+    percentual do valor anterior nos demais casos. Estados que não tinham o
+    indicador em algum dos anos aparecem com a variação em branco — a diferença
+    entre um número e uma ausência não é um número.
+  </p>
+</section>
+
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+{% if serie and serie.anos %}
+<script src="{{ depth }}static/vendor/chart.umd.min.js"></script>
+<script>
+const SERIE = {{ serie_json }};
+const NOMES_UF = {{ nomes_uf | json }};
+const ANOS = SERIE.anos;
+const CAMPOS = SERIE.campos;
+
+function variacao(antes, depois, chave) {
+  if (antes === null || antes === undefined ||
+      depois === null || depois === undefined) return null;
+  const meta = INDICADOR_META[chave] || {};
+  const ehPercentual = /^pct_/.test(chave) || (meta.escala || '').indexOf('%') !== -1;
+  if (ehPercentual) return { valor: depois - antes, unidade: 'p.p.' };
+  if (antes === 0) return null;
+  return { valor: (depois - antes) / antes * 100, unidade: '%' };
+}
+
+function celulaVariacao(v) {
+  const td = document.createElement('td');
+  td.className = 'num';
+  if (!v) {
+    td.textContent = 'sem dados';
+    td.classList.add('sem-dados');
+    td.dataset.valor = '';
+    return td;
+  }
+  const sinal = v.valor > 0 ? '+' : '';
+  td.textContent = sinal + v.valor.toLocaleString('pt-BR',
+    { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' ' + v.unidade;
+  td.dataset.valor = v.valor;
+  td.classList.add(v.valor > 0 ? 'variacao-alta' : (v.valor < 0 ? 'variacao-baixa' : ''));
+  return td;
+}
+
+const corpoBrasil = document.getElementById('corpo-brasil');
+CAMPOS.forEach(function (campo) {
+  const tr = document.createElement('tr');
+  const td = document.createElement('td');
+  td.textContent = nomeCompleto(campo);
+  tr.appendChild(td);
+  const valores = ANOS.map(a => (SERIE.brasil[a] || {})[campo]);
+  valores.forEach(function (v) {
+    const c = document.createElement('td');
+    c.className = 'num';
+    c.textContent = fmt(v, campo);
+    if (v === null || v === undefined) c.classList.add('sem-dados');
+    tr.appendChild(c);
+  });
+  tr.appendChild(celulaVariacao(
+    variacao(valores[0], valores[valores.length - 1], campo)));
+  corpoBrasil.appendChild(tr);
+});
+
+const seletor = document.getElementById('seletor-serie');
+CAMPOS.forEach(function (campo) {
+  const o = document.createElement('option');
+  o.value = campo;
+  o.textContent = nomeCompleto(campo);
+  seletor.appendChild(o);
+});
+
+let grafico = null;
+
+function montar() {
+  const campo = seletor.value;
+  const siglas = Object.keys(SERIE.ufs).sort();
+
+  const corpo = document.getElementById('corpo-serie');
+  corpo.innerHTML = '';
+  siglas.forEach(function (s) {
+    const tr = document.createElement('tr');
+    const td = document.createElement('td');
+    td.dataset.valor = NOMES_UF[s];
+    td.textContent = NOMES_UF[s];
+    tr.appendChild(td);
+    const valores = ANOS.map(a => ((SERIE.ufs[s] || {})[a] || {})[campo]);
+    valores.forEach(function (v) {
+      const c = document.createElement('td');
+      c.className = 'num';
+      c.dataset.valor = (v === null || v === undefined) ? '' : v;
+      c.textContent = fmt(v, campo);
+      if (v === null || v === undefined) c.classList.add('sem-dados');
+      tr.appendChild(c);
+    });
+    tr.appendChild(celulaVariacao(
+      variacao(valores[0], valores[valores.length - 1], campo)));
+    corpo.appendChild(tr);
+  });
+
+  if (grafico) grafico.destroy();
+  grafico = new Chart(document.getElementById('grafico-serie'), {
+    type: 'bar',
+    data: {
+      labels: siglas,
+      datasets: ANOS.map(function (ano, i) {
+        return {
+          label: String(ano),
+          data: siglas.map(s => ((SERIE.ufs[s] || {})[ano] || {})[campo] ?? null),
+          backgroundColor: i === 0 ? '#A6D3CC' : '#123F3A',
+        };
+      }),
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { tooltip: { callbacks: {
+        label: c => c.dataset.label + ': ' + fmt(c.raw, campo) } } },
+      scales: { y: { beginAtZero: true } },
+    },
+  });
+}
+
+seletor.addEventListener('change', montar);
+montar();
+</script>
+{% endif %}
+{% endblock %}

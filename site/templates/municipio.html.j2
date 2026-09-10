@@ -1,0 +1,111 @@
+{% extends "base.html.j2" %}
+{% block titulo %}{{ m.nome }} ({{ sigla }}) — Observatório Nacional da Formação em Psicologia{% endblock %}
+{% block descricao %}Formação e cobertura assistencial em Psicologia no município de {{ m.nome }}, {{ nome_uf }}.{% endblock %}
+
+{% block conteudo %}
+
+<nav class="migalhas" aria-label="Trilha">
+  <a href="{{ depth }}index.html">Panorama</a> ›
+  <a href="{{ depth }}uf/{{ sigla }}.html">{{ nome_uf }}</a> ›
+  <span>{{ m.nome }}</span>
+</nav>
+
+<section class="cabecalho-uf">
+  <h1>{{ m.nome }} <span class="sigla-uf">{{ sigla }}</span></h1>
+  <p class="linha-contexto">
+    {% if m.tem_curso_presencial %}
+      Município com oferta presencial de Psicologia.
+    {% elif m.polos_ead %}
+      Município sem curso presencial. A formação chega aqui por
+      {{ m.polos_ead }} polo{{ 's' if m.polos_ead > 1 else '' }} de EaD — o que
+      em Psicologia é raro: são {{ panorama.polos_registros | numero }} polos no
+      país inteiro.
+    {% else %}
+      Município sem curso presencial e sem polo de EaD registrado.
+    {% endif %}
+  </p>
+</section>
+
+<section class="secao">
+  <h2 class="secao-titulo">Formação</h2>
+  <div class="kpis kpis-compacto" data-cartoes>
+    {% for campo in ['vagas_presencial', 'cursos_presencial', 'n_ies',
+                     'matriculas', 'concluintes', 'polos_ead', 'matriculas_ead'] %}
+    <div class="kpi" data-campo="{{ campo }}"
+         data-valor="{{ m[campo] if m[campo] is not none else '' }}"></div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="secao">
+  <h2 class="secao-titulo">Cobertura assistencial — saúde</h2>
+  <div class="kpis kpis-compacto" data-cartoes>
+    {% for campo in ['psicologos_sus', 'estabelecimentos_raps',
+                     'raps_comunitaria', 'raps_residencial', 'raps_internacao'] %}
+    <div class="kpi" data-campo="{{ campo }}"
+         data-valor="{{ m[campo] if m[campo] is not none else '' }}"></div>
+    {% endfor %}
+  </div>
+  {% if m.servicos_raps %}
+  <p class="nota">
+    Serviços declarados no CNES:
+    {% for s in m.servicos_raps %}<code>{{ s }}</code>{% if not loop.last %}, {% endif %}{% endfor %}.
+    O código antes da barra é o serviço especializado — 115, atenção
+    psicossocial; depois da barra, a classificação. O total de
+    estabelecimentos não é a soma dos três recortes acima, porque um mesmo
+    estabelecimento pode declarar mais de uma classificação.
+  </p>
+  {% elif m.psicologos_sus %}
+  <p class="nota">
+    Há psicólogo vinculado ao SUS, mas nenhum estabelecimento do município
+    declara serviço de atenção psicossocial no CNES. As duas coisas são medidas
+    diferentes — profissional e serviço —, e é por isso que aparecem separadas.
+  </p>
+  {% endif %}
+</section>
+
+<section class="secao">
+  <h2 class="secao-titulo">Cobertura assistencial — assistência social</h2>
+  <div class="kpis kpis-compacto" data-cartoes>
+    {% for campo in ['cras', 'creas'] %}
+    <div class="kpi" data-campo="{{ campo }}"
+         data-valor="{{ m[campo] if m[campo] is not none else '' }}"></div>
+    {% endfor %}
+  </div>
+  <p class="nota">
+    O psicólogo é equipe de referência obrigatória nas duas unidades. O que
+    está medido aqui é a existência do equipamento, não a contagem de
+    psicólogos nele: o cadastro do SUAS publica total de profissionais sem
+    abertura por ocupação.
+  </p>
+</section>
+
+<section class="secao">
+  <h2 class="secao-titulo">Contexto estadual</h2>
+  <p>
+    {{ nome_uf }} tem {{ d.municipios_oferta | numero }} municípios com curso
+    presencial, de {{ d.municipios_total | numero }} no total.
+  </p>
+  <p><a class="botao" href="{{ depth }}uf/{{ sigla }}.html">Ver o estado inteiro</a></p>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.querySelectorAll('[data-cartoes] .kpi').forEach(function (cartao) {
+  const campo = cartao.dataset.campo;
+  const bruto = cartao.dataset.valor;
+  const valor = bruto === '' ? null : parseFloat(bruto);
+  const valorEl = document.createElement('span');
+  valorEl.className = 'kpi-valor';
+  valorEl.textContent = fmt(valor, campo);
+  if (valor === null) valorEl.classList.add('sem-dados');
+  const rotuloEl = document.createElement('span');
+  rotuloEl.className = 'kpi-rotulo';
+  rotuloEl.textContent = nomeCompleto(campo);
+  cartao.appendChild(valorEl);
+  cartao.appendChild(rotuloEl);
+});
+</script>
+{% endblock %}

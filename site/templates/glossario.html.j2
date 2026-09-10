@@ -1,0 +1,78 @@
+{% extends "base.html.j2" %}
+{% block titulo %}Glossário dos indicadores — Observatório Nacional da Formação em Psicologia{% endblock %}
+{% block descricao %}O que cada indicador mede, em que escala, em que direção e de que fonte vem.{% endblock %}
+
+{% block conteudo %}
+
+<section class="cabecalho-uf">
+  <h1>Glossário dos indicadores</h1>
+  <p class="secao-lede">
+    Cada verbete diz o que o indicador mede, em que escala, se um valor alto é
+    bom ou ruim, e de onde o número vem. Não há indicador neste site fora desta
+    lista: o glossário e a formatação das páginas saem da mesma estrutura, e o
+    build falha se alguma delas ficar para trás.
+  </p>
+</section>
+
+<section class="secao">
+  <div class="secao-cabecalho">
+    <label class="campo campo-busca">
+      Buscar
+      <input type="search" id="busca-glossario" placeholder="ICT, cobertura, EaD, doutores…"
+             autocomplete="off">
+    </label>
+    <span id="glossario-contador" class="contador"></span>
+  </div>
+  <div id="glossario"></div>
+</section>
+
+<section class="secao">
+  <h2 class="secao-titulo">Como ler as ausências</h2>
+  <p>
+    Onde não existe fonte oficial para um recorte, a página escreve
+    <span class="sem-dados">sem dados</span> e o mapa fica cinza. Isso nunca é
+    substituído por zero, por média nacional ou pelo valor de um estado vizinho.
+    Um valor ausente e um valor zero dizem coisas diferentes, e apagar essa
+    diferença é a maneira mais silenciosa de um observatório mentir.
+  </p>
+  <h3>Ausências conhecidas deste ciclo</h3>
+  <ul class="lista">
+    <li>
+      <strong>Psicólogos no SUAS.</strong> Não existe a contagem. O cadastro do
+      SUAS publica o total de profissionais por unidade, sem abertura por
+      ocupação — não há equivalente do CBO do CNES. Derivar o número da equipe
+      mínima prevista na NOB-RH/SUAS seria estimativa disfarçada de medição, e
+      por isso o indicador não existe aqui.
+    </li>
+    <li>
+      <strong>CRAS como índice de cobertura.</strong> Também não existe, e por
+      outro motivo: o equipamento está presente em quase todos os municípios do
+      país. Uma fração que vale praticamente 1 em toda unidade da federação não
+      ordena nada — publicá-la como índice produziria um ranking de ruído. O
+      CRAS aparece como contagem e como densidade, onde a variação é real.
+    </li>
+    <li>
+      <strong>Zero não é ausência.</strong> Vale para o observatório inteiro e
+      é decisivo aqui. Um estado com <code>0</code> vagas a distância foi
+      apurado e não tem nenhuma — são vinte e cinco nessa situação. Um estado
+      <span class="sem-dados">sem dados</span> é outro caso. Como a EaD quase
+      não existe em Psicologia, confundir as duas coisas apagaria justamente o
+      traço que distingue este curso.
+    </li>
+  </ul>
+
+  <h3>O que existe, e é fácil confundir com ausência</h3>
+  <ul class="lista">
+    <li>
+      <strong>O IDD está completo.</strong> Todos os cursos avaliados no ciclo
+      têm IDD — cobertura total. Em cursos menores a lacuna é comum, então uma
+      coluna cheia aqui não é sinal de preenchimento automático.
+    </li>
+    <li>
+      <strong>Todas as unidades da federação têm oferta presencial.</strong>
+      Nenhum estado aparece em cinza no mapa de capacidade por falta de curso.
+    </li>
+  </ul>
+</section>
+
+{% endblock %}

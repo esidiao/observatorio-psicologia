@@ -1,0 +1,249 @@
+{% extends "base.html.j2" %}
+{% block titulo %}Autoria e direitos — Observatório Nacional da Formação em Psicologia{% endblock %}
+{% block descricao %}Autoria, método, direitos autorais e registro de anterioridade do Observatório Nacional da Formação em Psicologia.{% endblock %}
+
+{% block conteudo %}
+
+<nav class="migalhas" aria-label="Trilha">
+  <a href="{{ depth }}index.html">Panorama</a> ›
+  <span>Autoria e direitos</span>
+</nav>
+
+<section class="cabecalho-uf">
+  <h1>Autoria e direitos</h1>
+</section>
+
+<section class="secao">
+  <div class="autor-topo">
+    <div class="autor-retrato">
+      <img src="{{ depth }}static/img/autor.jpg"
+           alt="Retrato de Edson Sidião de Souza Júnior" width="200" height="200">
+      <a class="autor-lattes" href="http://lattes.cnpq.br/9464330669014306"
+         rel="noopener" target="_blank">Currículo Lattes ↗</a>
+    </div>
+    <div class="autor-identidade">
+      <h2>Edson Sidião de Souza Júnior</h2>
+      <p class="autor-cargo">
+        Farmacêutico · CRF/GO 3686 · Mestre e Doutor em Medicina Tropical (UFG)<br>
+        Avaliador <em>ad hoc</em> INEP/MEC · Consultor em Gestão Educacional
+      </p>
+      <div class="autor-etiquetas">
+        <span class="autor-etiqueta">Avaliação e regulação MEC</span>
+        <span class="autor-etiqueta">SINAES</span>
+        <span class="autor-etiqueta">Gestão Educacional</span>
+        <span class="autor-etiqueta">Educação Superior em Saúde</span>
+        <span class="autor-etiqueta">Data Science</span>
+        <span class="autor-etiqueta">EaD</span>
+      </div>
+      <p>
+        <a href="mailto:sidiao@i9educar.com">sidiao@i9educar.com</a> ·
+        I9 Educar — Consultoria em Gestão Educacional
+      </p>
+    </div>
+  </div>
+</section>
+
+{#
+  Declaração de lugar de fala. O autor não é psicólogo, e um observatório sobre
+  uma profissão alheia precisa dizer isso na primeira tela — não numa nota de
+  rodapé. O que ele traz é competência em avaliação e regulação do ensino
+  superior, que independe do curso; o que ele não traz é a perspectiva de quem
+  exerce a profissão.
+#}
+<section class="secao">
+  <h2 class="secao-titulo">De onde este observatório fala</h2>
+  <div class="aviso">
+    <strong>O autor não é psicólogo.</strong> É farmacêutico, e sua
+    competência aqui é outra: quinze anos avaliando cursos de graduação em
+    saúde como avaliador <em>ad hoc</em> do INEP/MEC, com fluência no marco do
+    SINAES, nas Diretrizes Curriculares Nacionais e nos microdados do Censo da
+    Educação Superior. Essa competência é sobre <em>como se mede a formação</em>,
+    e vale para qualquer curso.
+  </div>
+  <p>
+    O que ela não substitui é a leitura de quem exerce a Psicologia. Os números
+    aqui descrevem oferta, qualidade avaliada e presença de rede — não dizem o
+    que é uma boa formação em Psicologia, nem o que a profissão precisa.
+    Correções de método, de interpretação e de recorte vindas de psicólogos,
+    docentes, conselhos e entidades da área são bem-vindas e serão creditadas.
+  </p>
+  <p>
+    Uma ressalva de recorte que merece estar aqui: os indicadores de cobertura
+    medem <em>onde há profissional e onde há serviço</em>, no SUS e no SUAS. A
+    Psicologia se exerce também na clínica privada, nas escolas, nas empresas,
+    no sistema de justiça e no trabalho — e nada disso aparece nestas páginas,
+    porque não há fonte municipal pública que o registre. O que está medido é a
+    absorção pelas duas políticas nacionais, não o mercado de trabalho da
+    profissão.
+  </p>
+</section>
+
+<section class="secao">
+  <h2 class="secao-titulo">Perfil</h2>
+  <p>
+    Farmacêutico pela Universidade Federal de Goiás (2000), Mestre (2004) e
+    Doutor (2008) em Medicina Tropical pela mesma instituição, com
+    especializações em Gestão da Assistência Farmacêutica (UFSC) e em
+    Comunicação em Mídias Digitais (Estácio de Sá), além da especialização em
+    andamento em Inteligência Artificial e Data Science para Líderes
+    (Mackenzie).
+  </p>
+  <p>
+    Atua há mais de quinze anos como avaliador <em>ad hoc</em> do INEP/MEC,
+    conduzindo avaliações <em>in loco</em> de autorização, reconhecimento e
+    renovação de reconhecimento de cursos de graduação em saúde em instituições
+    de todas as regiões do país. É avaliador do Conselho Estadual de Educação de
+    Goiás para o Ensino Superior e Técnico-profissional e membro do Grupo
+    Técnico de Ensino do Conselho Regional de Farmácia de Goiás.
+  </p>
+  <p>
+    Fundador da I9 Educar — Consultoria em Gestão Educacional, dedica-se a
+    Projetos Pedagógicos de Curso, Planos de Desenvolvimento Institucional e
+    processos regulatórios junto ao MEC. Na gestão acadêmica, é coordenador
+    acadêmico e docente do Centro Universitário Sul-Americano (UNIFASAM) e
+    coordenador acadêmico das Faculdades Integradas da América do Sul (INTEGRA);
+    foi Diretor Acadêmico da Faculdade Estácio de Sá de Goiás e da Faculdade
+    ITH. Ministrou disciplinas da área da saúde em cursos de Biomedicina,
+    Farmácia, Medicina, Enfermagem, Fisioterapia, Odontologia, Terapia
+    Ocupacional, Biologia e Psicologia.
+  </p>
+  <p>
+    Como pesquisador em Parasitologia e Medicina Tropical, é autor de 22 artigos
+    em periódicos, 2 livros e mais de 80 trabalhos em anais, com 78 citações.
+  </p>
+  <div class="kpis kpis-compacto autor-numeros">
+    <div class="kpi"><span class="kpi-valor">22</span><span class="kpi-rotulo">Artigos científicos</span></div>
+    <div class="kpi"><span class="kpi-valor">2</span><span class="kpi-rotulo">Livros</span></div>
+    <div class="kpi"><span class="kpi-valor">80+</span><span class="kpi-rotulo">Trabalhos em anais</span></div>
+    <div class="kpi"><span class="kpi-valor">78</span><span class="kpi-rotulo">Citações</span></div>
+    <div class="kpi"><span class="kpi-valor">15+</span><span class="kpi-rotulo">Anos INEP/MEC</span></div>
+  </div>
+</section>
+
+<section class="secao">
+  <h2 class="secao-titulo">Direitos autorais</h2>
+  <p class="destaque">
+    © {{ gerado_em[:4] }} Edson Sidião de Souza Júnior. Todos os direitos
+    reservados sobre a obra autoral, nos termos da Lei 9.610/1998 (direitos
+    autorais) e da Lei 9.609/1998 (programa de computador).
+  </p>
+
+  <h3>O que é obra do autor</h3>
+  <p>
+    A formulação dos índices ICT, E, IAF, ICAP, ICRP e ICAS; o catálogo de
+    indicadores e suas definições; o código do pipeline e do gerador do site;
+    os textos, o desenho editorial e a organização das páginas. Esse conjunto é
+    protegido e não pode ser copiado, adaptado ou redistribuído sem
+    autorização, salvo as exceções legais — entre elas a citação com
+    identificação da fonte.
+  </p>
+
+  <h3>O que não é</h3>
+  <p>
+    Os dados primários. O Censo da Educação Superior e o Conceito Preliminar de
+    Curso são do INEP; o Cadastro Nacional de Estabelecimentos de Saúde é do
+    Ministério da Saúde; as malhas territoriais e as estimativas populacionais
+    são do IBGE. Esses dados são públicos e pertencem às respectivas
+    instituições — reivindicá-los seria o oposto do que este projeto defende.
+  </p>
+  <p>
+    Os <strong>indicadores calculados</strong> e as tabelas derivadas, embora
+    resultem do trabalho descrito acima, são liberados para reúso — inclusive
+    comercial — desde que citados a fonte primária e este observatório. Estão
+    publicados em
+    <a href="{{ depth }}dados/nacional.json">nacional.json</a> e
+    <a href="{{ depth }}dados/indicadores.csv">indicadores.csv</a>.
+  </p>
+
+  <h3>Como citar</h3>
+  <p class="citacao">
+    SOUZA JÚNIOR, Edson Sidião de. <em>Observatório Nacional da Formação em
+    Fonoaudiologia</em>: indicadores de acesso territorial, qualidade e
+    cobertura assistencial. {{ gerado_em[:4] }}. Disponível em:
+    https://esidiao.github.io/observatorio-fonoaudiologia/. Acesso em: [data].
+  </p>
+
+  <h3>Bibliotecas de terceiros</h3>
+  <p>
+    O site embarca Leaflet e Chart.js, sob suas próprias licenças, e as fontes
+    Inter e Lora sob a SIL Open Font License. Nada disso é obra do autor e nada
+    disso está coberto pela reserva de direitos acima.
+  </p>
+</section>
+
+<section class="secao">
+  <h2 class="secao-titulo">Registro de anterioridade</h2>
+  <p>
+    O conteúdo autoral tem registro de anterioridade em
+    <a href="{{ depth }}dados/registro_autoral.json">registro_autoral.json</a>,
+    publicado junto com os dados. O registro guarda o resumo SHA-256 de cada
+    arquivo autoral, a data em que foi calculado e o commit que ancora essa
+    data no histórico do repositório.
+  </p>
+  <p>
+    O resumo é calculado sobre o <strong>conteúdo</strong>, com fim de linha
+    normalizado — não sobre os bytes como este ou aquele sistema operacional os
+    grava. É o que permite a alguém em outra máquina, com outro sistema, chegar
+    ao mesmo número. Um registro que só confere no computador do autor não
+    serviria para nada, porque a razão de existir é justamente a conferência
+    por terceiros.
+  </p>
+  <p>
+    <strong>O que ele é:</strong> declaração datada de conteúdo, verificável.
+    <strong>O que não é:</strong> registro em cartório ou depósito no INPI —
+    e não substitui nenhum dos dois.
+  </p>
+  <p>
+    <a class="botao" href="{{ depth }}dados/registro_autoral.json">Ver o registro</a>
+  </p>
+</section>
+
+<section class="secao">
+  <h2 class="secao-titulo">Como os números são conferidos</h2>
+  <ul class="lista">
+    <li>
+      <strong>Portão de qualidade.</strong> Antes de qualquer publicação, as
+      fórmulas dos índices e da estatística são conferidas contra casos cujos
+      resultados foram calculados à mão. Se uma fórmula mudar de resultado, o
+      build para.
+    </li>
+    <li>
+      <strong>Âncoras de regressão.</strong> Os totais conhecidos do Censo
+      {{ panorama.ano_censo }} e do CPC 2023 são testados a cada execução.
+    </li>
+    <li>
+      <strong>Catálogo fechado.</strong> Todo indicador publicado tem verbete de
+      glossário e regra de formatação, gerados da mesma estrutura.
+    </li>
+    <li>
+      <strong>Guarda de riqueza.</strong> O pipeline compara o número de campos
+      por estado com o da versão anterior e aborta se o resultado novo for mais
+      pobre — a falha mais fácil de não notar, porque os testes seguem verdes.
+    </li>
+    <li>
+      <strong>Proveniência.</strong> Todo número carrega fonte, ano e data de
+      extração, e o ano vem do arquivo lido, nunca do calendário.
+    </li>
+  </ul>
+</section>
+
+<section class="secao">
+  <h2 class="secao-titulo">Reprodutibilidade</h2>
+  <p>
+    Todo o pipeline roda a partir de fontes públicas, sem credencial. Não há
+    arquivo manual, planilha intermediária nem passo que dependa da máquina de
+    quem publica.
+  </p>
+  <pre class="codigo"><code>pip install -r requirements.txt
+python etl/pipeline.py --ano {{ panorama.ano_censo }}
+python site/build.py</code></pre>
+  <p class="nota">
+    Código em
+    <a href="https://github.com/esidiao/observatorio-fonoaudiologia">github.com/esidiao/observatorio-fonoaudiologia</a>.
+    Projeto irmão e independente do
+    <a href="https://github.com/esidiao/observatorio-formacao-farmaceutica">Observatório
+    Nacional da Formação Farmacêutica</a>.
+  </p>
+</section>
+
+{% endblock %}

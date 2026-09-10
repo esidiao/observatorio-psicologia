@@ -1,0 +1,385 @@
+{% extends "base.html.j2" %}
+{% block titulo %}{{ nome_uf }} — Observatório Nacional da Formação em Psicologia{% endblock %}
+{% block descricao %}Indicadores de formação, qualidade e cobertura assistencial em Psicologia no estado de {{ nome_uf }}.{% endblock %}
+
+{% block cabeca %}
+<link rel="stylesheet" href="{{ depth }}static/vendor/leaflet/leaflet.css">
+{% endblock %}
+
+{% block conteudo %}
+
+<nav class="migalhas" aria-label="Trilha">
+  <a href="{{ depth }}index.html">Panorama</a> ›
+  <span>{{ nome_uf }}</span>
+</nav>
+
+<section class="cabecalho-uf">
+  <h1>{{ nome_uf }} <span class="sigla-uf">{{ sigla }}</span></h1>
+  {% if not d.tem_oferta_presencial %}
+  <div class="aviso aviso-destaque">
+    <strong>{{ nome_uf }} não tem curso presencial de Psicologia.</strong>
+    O estado aparece neste observatório com todos os dados que possui —
+    população, municípios, polos de EaD e cobertura assistencial. Os
+    indicadores que dependem de oferta presencial ficam <em>sem dados</em>,
+    não zerados: não há o que medir, e isso é diferente de medir zero.
+  </div>
+  {% endif %}
+  <p class="linha-contexto">
+    Região {{ d.regiao }} ·
+    {{ d.municipios_total | numero }} municípios ·
+    {{ d.populacao | numero }} habitantes
+  </p>
+</section>
+
+<section class="secao">
+  <h2 class="secao-titulo">Capacidade formativa</h2>
+  <div class="kpis kpis-compacto" data-cartoes>
+    {% for campo in ['vagas_total', 'vagas_presencial', 'vagas_por_100k',
+                     'n_cursos_presencial', 'n_ies', 'n_mantenedoras',
+                     'vagas_capital'] %}
+    <div class="kpi" data-campo="{{ campo }}"
+         data-valor="{{ d[campo] if d[campo] is not none else '' }}"></div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="secao">
+  <h2 class="secao-titulo">Território</h2>
+  <div class="kpis kpis-compacto" data-cartoes>
+    {% for campo in ['municipios_oferta', 'municipios_deserto',
+                     'cobertura_municipal', 'ICT', 'E', 'municipios_total'] %}
+    <div class="kpi" data-campo="{{ campo }}"
+         data-valor="{{ d[campo] if d[campo] is not none else '' }}"></div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="secao">
+  <h2 class="secao-titulo">Qualidade</h2>
+  {% if not d.tem_avaliacao %}
+  <p class="aviso">
+    Nenhum curso de Psicologia de {{ nome_uf }} foi avaliado no ciclo do CPC
+    {{ meta.proveniencia.fontes.cpc.ciclo }}. Todos os indicadores de qualidade
+    — incluindo o IAF, que depende deles — aparecem como <em>sem dados</em>.
+    Preencher com a média nacional daria a este estado uma nota que ninguém
+    mediu.
+  </p>
+  {% endif %}
+  <div class="kpis kpis-compacto" data-cartoes>
+    {% for campo in ['IAF', 'CPC', 'CPC_cont', 'ENADE_cont', 'IDD',
+                     'n_cursos_avaliados', 'vagas_avaliadas',
+                     'pct_doc_doutores', 'pct_doc_mestres', 'pct_doc_regime_integral',
+                     'dim_didatico_pedagogica', 'dim_infraestrutura',
+                     'dim_oportunidade_formacao'] %}
+    <div class="kpi" data-campo="{{ campo }}"
+         data-valor="{{ d[campo] if d[campo] is not none else '' }}"></div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="secao">
+  <h2 class="secao-titulo">Cobertura assistencial — saúde</h2>
+  <p class="secao-lede">
+    Duas perguntas distintas: onde existe <em>profissional</em> em atividade, e
+    onde existe <em>serviço</em> de saúde mental. Publicadas separadamente
+    porque fundi-las exigiria arbitrar um peso entre as duas, e peso arbitrário
+    é estimativa disfarçada.
+  </p>
+  <div class="kpis kpis-compacto" data-cartoes>
+    {% for campo in ['ICAP', 'ICRP', 'municipios_com_psicologo', 'psicologos_sus',
+                     'psicologos_por_100k', 'municipios_com_raps',
+                     'estabelecimentos_raps'] %}
+    <div class="kpi" data-campo="{{ campo }}"
+         data-valor="{{ d[campo] if d[campo] is not none else '' }}"></div>
+    {% endfor %}
+  </div>
+
+  <h3 class="subsecao-titulo">A rede psicossocial, em três recortes</h3>
+  <p class="nota">
+    O serviço 115 do CNES reúne onze classificações, da promoção da saúde
+    mental à internação em regime fechado. Somá-las num número só mediria como
+    equivalentes coisas que a política pública trata como opostas. O total
+    conta estabelecimentos distintos e por isso <strong>não</strong> é a soma
+    dos três recortes: um mesmo CAPS pode declarar mais de uma classificação.
+  </p>
+  <div class="kpis kpis-compacto" data-cartoes>
+    {% for campo in ['municipios_com_raps_comunitaria',
+                     'municipios_com_raps_residencial',
+                     'municipios_com_raps_internacao'] %}
+    <div class="kpi" data-campo="{{ campo }}"
+         data-valor="{{ d[campo] if d[campo] is not none else '' }}"></div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="secao">
+  <h2 class="secao-titulo">Cobertura assistencial — assistência social</h2>
+  <p class="secao-lede">
+    O psicólogo é equipe de referência obrigatória em CRAS e CREAS. Psicologia
+    é das poucas formações cuja absorção pública se reparte entre duas
+    políticas nacionais, e esta seção é a segunda metade dessa história.
+    O que <em>não</em> existe é contagem de psicólogos no SUAS: o cadastro
+    publica total de profissionais por unidade, sem abertura por ocupação.
+  </p>
+  <div class="kpis kpis-compacto" data-cartoes>
+    {% for campo in ['ICAS', 'municipios_com_creas', 'creas_total',
+                     'creas_por_100k', 'municipios_com_cras', 'cras_total',
+                     'cras_por_100k'] %}
+    <div class="kpi" data-campo="{{ campo }}"
+         data-valor="{{ d[campo] if d[campo] is not none else '' }}"></div>
+    {% endfor %}
+  </div>
+  {% if d.municipios_com_cras is not none and d.municipios_total %}
+  <p class="nota">
+    {{ d.municipios_com_cras | numero }} dos {{ d.municipios_total | numero }}
+    municípios de {{ nome_uf }} têm CRAS. A presença do equipamento é quase
+    universal no país inteiro, e é por isso que o CRAS entra como contagem e
+    densidade, não como índice de cobertura: uma fração que vale 1 em toda UF
+    não ordena nada.
+  </p>
+  {% endif %}
+</section>
+
+{#
+  Seção própria para a EaD, recolhida do corpo principal. Os indicadores saem
+  da CATEGORIA do catálogo, não de uma lista escrita aqui — um indicador de
+  EaD acrescentado depois entra sozinho.
+#}
+<section class="secao secao-ead">
+  <h2 class="secao-titulo">Ensino a distância</h2>
+  <p class="secao-lede">
+    {% if d.vagas_ead %}
+      {{ nome_uf }} tem {{ d.vagas_ead | numero }} vagas a distância, de
+      {{ d.vagas_total | numero }} no total.
+    {% elif d.vagas_ead == 0 %}
+      {{ nome_uf }} não tem nenhuma vaga a distância de Psicologia. Isso é
+      medida, não lacuna: o estado foi apurado e o valor é zero.
+    {% else %}
+      As vagas a distância de {{ nome_uf }} não puderam ser apuradas.
+    {% endif %}
+    Em todo o país a modalidade responde por
+    {{ panorama.pct_ead | numero(1) }}% da capacidade.
+  </p>
+  <div class="kpis kpis-compacto" data-cartoes>
+    {% for ind in catalogo if ind.cat == categoria_ead and ind.key in campos_ead %}
+    <div class="kpi" data-campo="{{ ind.key }}"
+         data-valor="{{ d[ind.key] if d[ind.key] is not none else '' }}"></div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="secao">
+  <h2 class="secao-titulo">Concentração de mercado</h2>
+  <div class="kpis kpis-compacto" data-cartoes>
+    {% for campo in ['HHI', 'HHI_mantenedora', 'CR2', 'CR10'] %}
+    <div class="kpi" data-campo="{{ campo }}"
+         data-valor="{{ d[campo] if d[campo] is not none else '' }}"></div>
+    {% endfor %}
+  </div>
+  {% if d.HHI is not none and d.HHI_mantenedora is not none %}
+  <p class="nota">
+    {% if d.HHI_mantenedora > d.HHI * 1.15 %}
+      A concentração por mantenedora é sensivelmente maior que a por
+      instituição: há grupos operando mais de uma instituição no estado.
+    {% else %}
+      Os dois índices ficam próximos, o que em Psicologia é o caso comum e é
+      <strong>achado, não erro de conta</strong>. A distância entre eles mede o
+      peso dos grandes grupos de EaD; aqui a EaD é
+      {{ panorama.pct_ead | numero(1) }}% da capacidade nacional, e não há esse
+      peso a revelar.
+    {% endif %}
+  </p>
+  {% endif %}
+</section>
+
+<section class="secao">
+  <h2 class="secao-titulo">Fluxo e perfil dos estudantes</h2>
+  <div class="kpis kpis-compacto" data-cartoes>
+    {% for campo in ['matriculas', 'matriculas_presencial', 'ingressos',
+                     'concluintes', 'taxa_conclusao',
+                     'pct_mulheres', 'pct_ppi', 'pct_cor_nao_declarada',
+                     'pct_noturno', 'pct_rede_publica', 'pct_financiamento',
+                     'pct_apoio_social', 'pct_reserva_vaga'] %}
+    <div class="kpi" data-campo="{{ campo }}"
+         data-valor="{{ d[campo] if d[campo] is not none else '' }}"></div>
+    {% endfor %}
+  </div>
+  {% if d.pct_cor_nao_declarada and d.pct_cor_nao_declarada > 15 %}
+  <p class="nota">
+    {{ d.pct_cor_nao_declarada | numero(1) }}% dos matriculados não declararam
+    cor ou raça. O percentual de pretos, pardos e indígenas acima é, portanto,
+    um piso — não uma medida fechada.
+  </p>
+  {% endif %}
+</section>
+
+{% if municipios %}
+<section class="secao">
+  <div class="secao-cabecalho">
+    <h2 class="secao-titulo">Municípios</h2>
+    <label class="campo">
+      Indicador no mapa
+      <select id="seletor-mapa-mun">
+        <option value="vagas_presencial" selected>Vagas presenciais</option>
+        <option value="matriculas">Matrículas</option>
+        <option value="concluintes">Concluintes</option>
+        <option value="polos_ead">Polos EaD</option>
+        <option value="psicologos_sus">Psicólogos no SUS</option>
+        <option value="estabelecimentos_raps">Estabelecimentos psicossociais</option>
+        <option value="creas">Unidades de CREAS</option>
+        <option value="cras">Unidades de CRAS</option>
+      </select>
+    </label>
+  </div>
+  <div id="mapa-mun" class="mapa"></div>
+  <div id="legenda-mun" class="legenda"></div>
+  <p class="nota">
+    Municípios sem nenhum registro de curso ou polo aparecem em cinza —
+    ausência de oferta, não valor baixo.
+  </p>
+
+  <div class="secao-cabecalho">
+    <h3>{{ municipios | length }} municípios com curso ou polo</h3>
+    <button class="botao" data-exportar="#tabela-mun"
+            data-nome="municipios-{{ sigla }}-psicologia.csv">Baixar CSV</button>
+    <button class="botao botao-fantasma" data-exportar-xlsx="#tabela-mun"
+            data-nome="municipios-{{ sigla }}-psicologia.xlsx" data-aba="Municípios">Baixar XLSX</button>
+  </div>
+  <div class="tabela-rolagem">
+    <table id="tabela-mun" data-ordenavel>
+      <caption class="so-leitor">Municípios do estado com curso presencial ou polo de EaD</caption>
+      <thead>
+        <tr>
+          <th scope="col">Município</th>
+          <th scope="col">Vagas presenciais</th>
+          <th scope="col">Cursos</th>
+          <th scope="col">Matrículas</th>
+          <th scope="col">Concluintes</th>
+          <th scope="col">Polos EaD</th>
+          <th scope="col">Psicólogos no SUS</th>
+          <th scope="col">CREAS</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in municipios %}
+        <tr>
+          <td data-valor="{{ m.nome }}">
+            <a href="{{ depth }}municipio/{{ sigla }}/{{ m.slug }}.html">{{ m.nome }}</a>
+          </td>
+          {% for campo in ['vagas_presencial', 'cursos_presencial', 'matriculas',
+                           'concluintes', 'polos_ead', 'psicologos_sus', 'creas'] %}
+          <td class="num" data-campo="{{ campo }}"
+              data-valor="{{ m[campo] if m[campo] is not none else '' }}"></td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endif %}
+
+<section class="secao">
+  <h2 class="secao-titulo">Comparar com outros estados</h2>
+  <p><a class="botao" href="{{ depth }}comparar.html?uf={{ sigla }}">Abrir comparação</a></p>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ depth }}static/vendor/leaflet/leaflet.js"></script>
+<script>
+const D = {{ uf_json }};
+const MUNICIPIOS = {{ municipios_json }};
+const CODIGO_IBGE = {{ codigo_ibge | tojson }};
+const DEPTH = {{ depth | tojson }};
+const SIGLA = {{ sigla | tojson }};
+
+/* Cartões montados a partir do catálogo: rótulo, casas decimais e a marca de
+   ausência saem todos da mesma estrutura que gera o glossário. */
+document.querySelectorAll('[data-cartoes] .kpi').forEach(function (cartao) {
+  const campo = cartao.dataset.campo;
+  const bruto = cartao.dataset.valor;
+  const valor = bruto === '' ? null : parseFloat(bruto);
+  const valorEl = document.createElement('span');
+  valorEl.className = 'kpi-valor';
+  valorEl.textContent = fmt(valor, campo);
+  if (valor === null) valorEl.classList.add('sem-dados');
+  const rotuloEl = document.createElement('span');
+  rotuloEl.className = 'kpi-rotulo';
+  rotuloEl.textContent = nomeCompleto(campo);
+  const notaEl = document.createElement('a');
+  notaEl.className = 'kpi-nota kpi-link';
+  notaEl.href = DEPTH + 'glossario.html#g-' + campo;
+  const item = GLOSSARIO.filter(g => g.key === campo)[0];
+  notaEl.textContent = item ? item.escala : '';
+  cartao.appendChild(valorEl);
+  cartao.appendChild(rotuloEl);
+  cartao.appendChild(notaEl);
+});
+
+document.querySelectorAll('td[data-campo]').forEach(function (td) {
+  const bruto = td.dataset.valor;
+  const valor = bruto === '' ? null : parseFloat(bruto);
+  td.textContent = fmt(valor, td.dataset.campo);
+  if (valor === null) td.classList.add('sem-dados');
+});
+
+/* Mapa municipal. A malha do IBGE traz `codarea` (código de 7 dígitos) e nada
+   mais — o cruzamento é por código, nunca por nome: a grafia diverge entre as
+   bases e há homônimos entre estados. */
+const mapaMunEl = document.getElementById('mapa-mun');
+if (mapaMunEl && CODIGO_IBGE) {
+  const porCodigo = {};
+  MUNICIPIOS.forEach(function (m) { porCodigo[String(m.codigo)] = m; });
+
+  const seletorMun = document.getElementById('seletor-mapa-mun');
+  const legendaMunEl = document.getElementById('legenda-mun');
+  let mapaMun = null, camadaMun = null, malhaMun = null;
+
+  function valorDoMunicipio(f, campo) {
+    const m = porCodigo[String((f.properties || {}).codarea)];
+    if (!m) return null;                 /* município sem curso nem polo */
+    const v = m[campo];
+    return (v === undefined) ? null : v;
+  }
+
+  function redesenharMun() {
+    const campo = seletorMun.value;
+    const valores = MUNICIPIOS.map(m => m[campo]);
+    const cor = escalaDinamica(valores);
+    if (camadaMun) { camadaMun.remove(); camadaMun = null; }
+    camadaMun = desenharMalha(mapaMun, malhaMun, {
+      chave: campo,
+      valorDe: f => valorDoMunicipio(f, campo),
+      rotuloDe: function (f) {
+        const m = porCodigo[String((f.properties || {}).codarea)];
+        return m ? m.nome : 'Município sem curso nem polo';
+      },
+      corDe: cor,
+      aoClicar: function (f) {
+        const m = porCodigo[String((f.properties || {}).codarea)];
+        if (!m) return;
+        /* Caminho montado por JS a partir de um slug já normalizado no build.
+           Nomes como "Olho d'Água" nunca entram numa string com aspas. */
+        window.location.href = DEPTH + 'municipio/' + SIGLA + '/' + m.slug + '.html';
+      },
+    });
+    montarLegenda(legendaMunEl, campo, valores);
+  }
+
+  fetch(DEPTH + 'static/geo/estados/' + CODIGO_IBGE + '.json')
+    .then(r => r.json())
+    .then(function (geo) {
+      malhaMun = geo;
+      mapaMun = criarMapa(mapaMunEl);
+      redesenharMun();
+      seletorMun.addEventListener('change', redesenharMun);
+    })
+    .catch(function () {
+      mapaMunEl.innerHTML = '<p class="vazio">Não foi possível carregar a ' +
+        'malha municipal. A tabela abaixo traz os mesmos dados.</p>';
+    });
+}
+</script>
+{% endblock %}

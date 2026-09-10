@@ -1,0 +1,30 @@
+# Site gerado
+site/dist/
+
+# Microdados e bases brutas (grandes demais para o repositório)
+etl/dados/
+etl/*.CSV
+etl/*.csv
+etl/*.ZIP
+etl/*.zip
+!etl/qualidade_uf.csv
+
+# Dumps de depuração (conteúdo derivável de data/*.json)
+*_dump.txt
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+*.tmp
+
+# Logs de execução do pipeline (derivados, não são dado)
+data/_*.log

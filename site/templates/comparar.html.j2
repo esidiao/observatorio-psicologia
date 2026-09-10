@@ -1,0 +1,314 @@
+{% extends "base.html.j2" %}
+{% block titulo %}Comparar estados — Observatório Nacional da Formação em Psicologia{% endblock %}
+{% block descricao %}Compare estados em qualquer indicador: tabela ordenável, barras e radar normalizado.{% endblock %}
+
+{% block conteudo %}
+
+<section class="cabecalho-uf">
+  <h1>Comparar estados</h1>
+  <p class="secao-lede">
+    Escolha os indicadores e os estados. A tabela ordena por qualquer coluna, e
+    estados sem o dado vão sempre para o fim da ordenação — nas duas direções.
+    Empurrá-los para o topo de uma ordem crescente os faria parecer os
+    melhores; para o fim de uma decrescente, os piores. Nenhuma das duas
+    leituras seria verdade.
+  </p>
+</section>
+
+<section class="secao">
+  <div class="painel">
+    <fieldset class="painel-bloco">
+      <legend>Indicadores</legend>
+      <div id="escolha-indicadores" class="chips"></div>
+    </fieldset>
+    <fieldset class="painel-bloco">
+      <legend>Estados</legend>
+      <div class="acoes-linha">
+        <button type="button" class="botao botao-fantasma" id="todos-ufs">Todos</button>
+        <button type="button" class="botao botao-fantasma" id="so-com-oferta">Só com oferta presencial</button>
+        <button type="button" class="botao botao-fantasma" id="nenhum-uf">Nenhum</button>
+      </div>
+      <div id="escolha-ufs" class="chips"></div>
+    </fieldset>
+  </div>
+</section>
+
+<section class="secao">
+  <div class="secao-cabecalho">
+    <h2 class="secao-titulo">Tabela</h2>
+    <button class="botao" data-exportar="#tabela-comparar" data-nome="comparacao-psicologia.csv">
+      Baixar CSV
+    </button>
+    <button class="botao botao-fantasma" data-exportar-xlsx="#tabela-comparar"
+            data-nome="comparacao-psicologia.xlsx" data-aba="Comparação">Baixar XLSX</button>
+  </div>
+  <div class="tabela-rolagem">
+    <table id="tabela-comparar" data-ordenavel>
+      <caption class="so-leitor">Comparação de indicadores entre os estados selecionados</caption>
+      <thead><tr id="cabecalho-comparar"><th scope="col">Estado</th></tr></thead>
+      <tbody id="corpo-comparar"></tbody>
+    </table>
+  </div>
+</section>
+
+<section class="secao">
+  <h2 class="secao-titulo">Barras</h2>
+  <label class="campo">
+    Indicador
+    <select id="seletor-barras"></select>
+  </label>
+  <div class="grafico-caixa"><canvas id="grafico-barras"></canvas></div>
+  <p class="nota">Estados sem o indicador não aparecem no gráfico, e a contagem
+    de quantos ficaram de fora é dita abaixo do eixo.</p>
+  <p id="barras-omitidos" class="nota"></p>
+</section>
+
+<section class="secao">
+  <h2 class="secao-titulo">Radar normalizado</h2>
+  <p class="secao-lede">
+    Cada eixo é normalizado de 0 a 100 sobre os estados <em>exibidos</em>, com a
+    direção do indicador já aplicada: 100 é sempre o melhor desempenho entre os
+    selecionados. Trocar a seleção muda a escala — o radar compara os escolhidos
+    entre si, não contra um padrão absoluto.
+  </p>
+  <div class="grafico-caixa"><canvas id="grafico-radar"></canvas></div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ depth }}static/vendor/chart.umd.min.js"></script>
+<script>
+const UFS = {{ ufs_json }};
+const NOMES_UF = {{ nomes_uf | json }};
+const DEPTH = {{ depth | tojson }};
+
+const PADRAO = ['vagas_total', 'ICT', 'IAF', 'CPC', 'ICAP', 'ICRP', 'ICAS'];
+const COMPARAVEIS = GLOSSARIO.map(g => g.key);
+
+const siglas = Object.keys(UFS).sort();
+let indicadoresSel = PADRAO.slice();
+let ufsSel = siglas.filter(s => UFS[s].tem_oferta_presencial);
+
+/* Um estado pode chegar aqui por link da página de UF (?uf=SP). */
+const parametro = new URLSearchParams(location.search).get('uf');
+if (parametro && UFS[parametro.toUpperCase()]) {
+  ufsSel = [parametro.toUpperCase()].concat(ufsSel.filter(s => s !== parametro.toUpperCase()));
+}
+
+function chip(texto, ativo, aoClicar) {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'chip' + (ativo ? ' chip-ativo' : '');
+  b.textContent = texto;
+  b.setAttribute('aria-pressed', ativo ? 'true' : 'false');
+  b.addEventListener('click', aoClicar);
+  return b;
+}
+
+function montarEscolhas() {
+  const alvoInd = document.getElementById('escolha-indicadores');
+  alvoInd.innerHTML = '';
+  CATEGORIAS.forEach(function (cat) {
+    const doGrupo = GLOSSARIO.filter(g => g.cat === cat);
+    if (!doGrupo.length) return;
+    const titulo = document.createElement('span');
+    titulo.className = 'chips-titulo';
+    titulo.textContent = cat;
+    alvoInd.appendChild(titulo);
+    doGrupo.forEach(function (g) {
+      alvoInd.appendChild(chip(g.sigla, indicadoresSel.indexOf(g.key) !== -1, function () {
+        const i = indicadoresSel.indexOf(g.key);
+        if (i === -1) indicadoresSel.push(g.key); else indicadoresSel.splice(i, 1);
+        redesenhar();
+      }));
+    });
+  });
+
+  const alvoUf = document.getElementById('escolha-ufs');
+  alvoUf.innerHTML = '';
+  siglas.forEach(function (s) {
+    const rotulo = UFS[s].tem_oferta_presencial ? s : s + ' ·';
+    const b = chip(rotulo, ufsSel.indexOf(s) !== -1, function () {
+      const i = ufsSel.indexOf(s);
+      if (i === -1) ufsSel.push(s); else ufsSel.splice(i, 1);
+      redesenhar();
+    });
+    if (!UFS[s].tem_oferta_presencial) {
+      b.title = NOMES_UF[s] + ' não tem curso presencial de Psicologia';
+      b.classList.add('chip-sem-oferta');
+    }
+    alvoUf.appendChild(b);
+  });
+}
+
+function montarTabela() {
+  const cabecalho = document.getElementById('cabecalho-comparar');
+  cabecalho.innerHTML = '<th scope="col">Estado</th>';
+  indicadoresSel.forEach(function (k) {
+    const th = document.createElement('th');
+    th.textContent = rotulo(k);
+    th.title = nomeCompleto(k);
+    cabecalho.appendChild(th);
+  });
+
+  const corpo = document.getElementById('corpo-comparar');
+  corpo.innerHTML = '';
+  ufsSel.slice().sort().forEach(function (s) {
+    const tr = document.createElement('tr');
+    const td = document.createElement('td');
+    td.dataset.valor = NOMES_UF[s];
+    const a = document.createElement('a');
+    a.href = DEPTH + 'uf/' + s + '.html';
+    a.textContent = NOMES_UF[s];
+    td.appendChild(a);
+    if (!UFS[s].tem_oferta_presencial) {
+      const marca = document.createElement('span');
+      marca.className = 'marca-sem-oferta';
+      marca.textContent = 'sem oferta presencial';
+      td.appendChild(marca);
+    }
+    tr.appendChild(td);
+    indicadoresSel.forEach(function (k) {
+      const cel = document.createElement('td');
+      cel.className = 'num';
+      const v = UFS[s][k];
+      cel.dataset.valor = (v === null || v === undefined) ? '' : v;
+      cel.textContent = fmt(v, k);
+      if (v === null || v === undefined) cel.classList.add('sem-dados');
+      tr.appendChild(cel);
+    });
+    corpo.appendChild(tr);
+  });
+  ativarTabelasOrdenaveis();
+}
+
+let grafBarras = null;
+let grafRadar = null;
+
+function montarSeletorBarras() {
+  const sel = document.getElementById('seletor-barras');
+  const anterior = sel.value;
+  sel.innerHTML = '';
+  indicadoresSel.forEach(function (k) {
+    const o = document.createElement('option');
+    o.value = k;
+    o.textContent = nomeCompleto(k);
+    sel.appendChild(o);
+  });
+  if (indicadoresSel.indexOf(anterior) !== -1) sel.value = anterior;
+}
+
+function montarBarras() {
+  const sel = document.getElementById('seletor-barras');
+  const k = sel.value || indicadoresSel[0];
+  if (!k) return;
+  const meta = INDICADOR_META[k] || {};
+  const dados = ufsSel
+    .map(s => ({ s: s, v: UFS[s][k] }))
+    .filter(d => d.v !== null && d.v !== undefined);
+  const omitidos = ufsSel.length - dados.length;
+  dados.sort((a, b) => (meta.dir === 'menor' ? a.v - b.v : b.v - a.v));
+
+  document.getElementById('barras-omitidos').textContent = omitidos
+    ? omitidos + (omitidos === 1 ? ' estado ficou de fora por não ter o dado.'
+                                 : ' estados ficaram de fora por não terem o dado.')
+    : '';
+
+  if (grafBarras) grafBarras.destroy();
+  grafBarras = new Chart(document.getElementById('grafico-barras'), {
+    type: 'bar',
+    data: {
+      labels: dados.map(d => d.s),
+      datasets: [{
+        label: nomeCompleto(k),
+        data: dados.map(d => (meta.mult ? d.v * meta.mult : d.v)),
+        backgroundColor: dados.map(d => corPara(d.v, k)),
+        borderWidth: 0,
+      }],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: c => fmt(dados[c.dataIndex].v, k) } },
+      },
+      scales: { y: { beginAtZero: true } },
+    },
+  });
+}
+
+/* Normalização feita sobre os estados EXIBIDOS, com a direção já aplicada:
+   100 é sempre o melhor entre os selecionados. Ausência não vira 0 — o eixo
+   simplesmente não recebe ponto para aquele estado. */
+function normalizarParaRadar(chave, estados) {
+  const meta = INDICADOR_META[chave] || {};
+  const presentes = estados.map(s => UFS[s][chave]).filter(v => v !== null && v !== undefined);
+  if (presentes.length < 2) return estados.map(() => null);
+  const menor = Math.min.apply(null, presentes);
+  const maior = Math.max.apply(null, presentes);
+  return estados.map(function (s) {
+    const v = UFS[s][chave];
+    if (v === null || v === undefined) return null;
+    if (maior === menor) return 50;
+    const t = (v - menor) / (maior - menor) * 100;
+    return Math.round((meta.dir === 'menor' ? 100 - t : t) * 10) / 10;
+  });
+}
+
+const CORES_SERIE = ['#123F3A', '#C0562F', '#2A7D74', '#7A6A9B', '#8A9A2E',
+                     '#B2182B', '#2166AC', '#6B7280'];
+
+function montarRadar() {
+  const eixos = indicadoresSel.filter(k => (INDICADOR_META[k] || {}).dir !== 'contextual');
+  const usados = eixos.length >= 3 ? eixos : indicadoresSel;
+  const estados = ufsSel.slice(0, 8);
+  const porEixo = {};
+  usados.forEach(k => { porEixo[k] = normalizarParaRadar(k, estados); });
+
+  if (grafRadar) grafRadar.destroy();
+  if (!usados.length || !estados.length) return;
+  grafRadar = new Chart(document.getElementById('grafico-radar'), {
+    type: 'radar',
+    data: {
+      labels: usados.map(k => rotulo(k)),
+      datasets: estados.map(function (s, i) {
+        return {
+          label: NOMES_UF[s],
+          data: usados.map(k => porEixo[k][i]),
+          borderColor: CORES_SERIE[i % CORES_SERIE.length],
+          backgroundColor: 'transparent',
+          borderWidth: 2,
+          pointRadius: 2,
+        };
+      }),
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: { r: { min: 0, max: 100, ticks: { stepSize: 25 } } },
+    },
+  });
+}
+
+function redesenhar() {
+  montarEscolhas();
+  montarTabela();
+  montarSeletorBarras();
+  montarBarras();
+  montarRadar();
+}
+
+document.getElementById('todos-ufs').addEventListener('click', function () {
+  ufsSel = siglas.slice(); redesenhar();
+});
+document.getElementById('so-com-oferta').addEventListener('click', function () {
+  ufsSel = siglas.filter(s => UFS[s].tem_oferta_presencial); redesenhar();
+});
+document.getElementById('nenhum-uf').addEventListener('click', function () {
+  ufsSel = []; redesenhar();
+});
+document.getElementById('seletor-barras').addEventListener('change', montarBarras);
+
+redesenhar();
+</script>
+{% endblock %}

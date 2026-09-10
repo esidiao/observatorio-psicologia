@@ -1,0 +1,218 @@
+{% extends "base.html.j2" %}
+{% block titulo %}Índice sintético e ranking — Observatório Nacional da Formação em Psicologia{% endblock %}
+{% block descricao %}Índice sintético dos estados, com pesos ajustáveis pelo leitor.{% endblock %}
+
+{% block conteudo %}
+
+<section class="cabecalho-uf">
+  <h1>Índice sintético</h1>
+  <p class="secao-lede">
+    Um índice sintético é uma opinião com aparência de medida: os pesos são
+    escolha de quem monta, não propriedade dos dados. Por isso os pesos ficam
+    aqui, à sua mão, e o ranking se refaz enquanto você move os controles. Os
+    valores de partida estão declarados no código do build, não escondidos.
+  </p>
+  <div class="aviso">
+    <strong>Como as ausências entram.</strong> Um estado sem determinado
+    componente <em>não</em> recebe zero naquele eixo: o componente sai da conta
+    dele, e a tabela mostra sobre quantos dos {{ indice.componentes | length }}
+    o índice foi calculado. Zerar a ausência jogaria os estados não avaliados
+    para o fim do ranking como se tivessem sido medidos e tivessem ido mal.
+  </div>
+</section>
+
+<section class="secao">
+  <div class="secao-cabecalho">
+    <h2 class="secao-titulo">Pesos</h2>
+    <button type="button" class="botao botao-fantasma" id="restaurar-pesos">
+      Restaurar pesos iniciais
+    </button>
+  </div>
+  <div id="controles-peso" class="pesos"></div>
+  <p id="soma-pesos" class="nota"></p>
+</section>
+
+<section class="secao">
+  <div class="secao-cabecalho">
+    <h2 class="secao-titulo">Ranking</h2>
+    <button class="botao" data-exportar="#tabela-indice" data-nome="indice-psicologia.csv">
+      Baixar CSV
+    </button>
+    <button class="botao botao-fantasma" data-exportar-xlsx="#tabela-indice"
+            data-nome="indice-psicologia.xlsx" data-aba="Índice">Baixar XLSX</button>
+  </div>
+  <div class="tabela-rolagem">
+    <table id="tabela-indice" data-ordenavel>
+      <caption class="so-leitor">Ranking dos estados pelo índice sintético</caption>
+      <thead>
+        <tr id="cabecalho-indice">
+          <th scope="col">#</th>
+          <th scope="col">Estado</th>
+          <th scope="col">Índice</th>
+          <th scope="col">Componentes usados</th>
+        </tr>
+      </thead>
+      <tbody id="corpo-indice"></tbody>
+    </table>
+  </div>
+  <p class="tabela-dica">Role a tabela para o lado para ver as demais colunas.</p>
+  <p class="nota">
+    Os valores de cada componente são normalizados de 0 a 100 sobre os 27
+    estados, com a direção do indicador já aplicada — 100 é sempre o melhor
+    desempenho observado. A normalização é feita no build, não no navegador:
+    fosse no cliente, a escala mudaria conforme o filtro aplicado e dois
+    leitores veriam números diferentes para o mesmo estado.
+  </p>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+const INDICE = {{ indice_json }};
+const UFS = {{ ufs_json }};
+const NOMES_UF = {{ nomes_uf | json }};
+const DEPTH = {{ depth | tojson }};
+
+const pesos = {};
+INDICE.componentes.forEach(function (c) { pesos[c.key] = c.peso; });
+
+function montarControles() {
+  const alvo = document.getElementById('controles-peso');
+  alvo.innerHTML = '';
+  INDICE.componentes.forEach(function (c) {
+    const linha = document.createElement('div');
+    linha.className = 'peso-linha';
+
+    const rot = document.createElement('label');
+    rot.className = 'peso-rotulo';
+    rot.setAttribute('for', 'peso-' + c.key);
+    rot.textContent = c.rotulo;
+
+    const faixa = document.createElement('input');
+    faixa.type = 'range';
+    faixa.id = 'peso-' + c.key;
+    faixa.min = 0;
+    faixa.max = 100;
+    faixa.step = 5;
+    faixa.value = pesos[c.key];
+
+    const valor = document.createElement('output');
+    valor.className = 'peso-valor';
+    valor.textContent = pesos[c.key];
+
+    faixa.addEventListener('input', function () {
+      pesos[c.key] = parseInt(faixa.value, 10);
+      valor.textContent = faixa.value;
+      montarRanking();
+    });
+
+    linha.appendChild(rot);
+    linha.appendChild(faixa);
+    linha.appendChild(valor);
+    alvo.appendChild(linha);
+  });
+}
+
+/* Média PONDERADA sobre os componentes presentes, com os pesos renormalizados
+   pelo que existe. Sem renormalizar, um estado a que falta um componente de
+   peso 25 teria seu índice dividido por 100 em vez de por 75 — e sairia
+   artificialmente pior do que é, exatamente o efeito que a página promete
+   não produzir. */
+function calcular(sigla) {
+  let soma = 0;
+  let pesoUsado = 0;
+  let usados = 0;
+  INDICE.componentes.forEach(function (c) {
+    const v = INDICE.normalizados[c.key][sigla];
+    const p = pesos[c.key];
+    if (v === null || v === undefined || !p) return;
+    soma += v * p;
+    pesoUsado += p;
+    usados += 1;
+  });
+  if (!pesoUsado) return { valor: null, usados: 0 };
+  return { valor: Math.round((soma / pesoUsado) * 10) / 10, usados: usados };
+}
+
+function montarRanking() {
+  const total = Object.keys(pesos).reduce((a, k) => a + pesos[k], 0);
+  document.getElementById('soma-pesos').textContent = total === 0
+    ? 'Todos os pesos estão em zero — nenhum índice pode ser calculado.'
+    : 'Soma dos pesos: ' + total + '. Os pesos são renormalizados por estado, ' +
+      'conforme os componentes que ele tem — não precisam somar 100.';
+
+  const linhas = INDICE.ufs.map(function (s) {
+    const r = calcular(s);
+    return { sigla: s, valor: r.valor, usados: r.usados };
+  });
+  linhas.sort(function (a, b) {
+    if (a.valor === null && b.valor === null) return 0;
+    if (a.valor === null) return 1;
+    if (b.valor === null) return -1;
+    return b.valor - a.valor;
+  });
+
+  const corpo = document.getElementById('corpo-indice');
+  corpo.innerHTML = '';
+  let posicao = 0;
+  linhas.forEach(function (l) {
+    const tr = document.createElement('tr');
+
+    const tdPos = document.createElement('td');
+    tdPos.className = 'num';
+    if (l.valor !== null) {
+      posicao += 1;
+      tdPos.textContent = posicao;
+      tdPos.dataset.valor = posicao;
+    } else {
+      tdPos.textContent = '—';
+      tdPos.dataset.valor = '';
+    }
+
+    const tdUf = document.createElement('td');
+    tdUf.dataset.valor = NOMES_UF[l.sigla];
+    const a = document.createElement('a');
+    a.href = DEPTH + 'uf/' + l.sigla + '.html';
+    a.textContent = NOMES_UF[l.sigla];
+    tdUf.appendChild(a);
+    if (!UFS[l.sigla].tem_oferta_presencial) {
+      const marca = document.createElement('span');
+      marca.className = 'marca-sem-oferta';
+      marca.textContent = 'sem oferta presencial';
+      tdUf.appendChild(marca);
+    }
+
+    const tdValor = document.createElement('td');
+    tdValor.className = 'num';
+    tdValor.dataset.valor = l.valor === null ? '' : l.valor;
+    if (l.valor === null) {
+      tdValor.textContent = 'sem dados';
+      tdValor.classList.add('sem-dados');
+    } else {
+      tdValor.textContent = l.valor.toLocaleString('pt-BR',
+        { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+      tdValor.style.background = corSequencial(l.valor, 'IAF');
+    }
+
+    const tdUsados = document.createElement('td');
+    tdUsados.className = 'num';
+    tdUsados.dataset.valor = l.usados;
+    tdUsados.textContent = l.usados + ' de ' + INDICE.componentes.length;
+    if (l.usados < INDICE.componentes.length) tdUsados.classList.add('parcial');
+
+    [tdPos, tdUf, tdValor, tdUsados].forEach(td => tr.appendChild(td));
+    corpo.appendChild(tr);
+  });
+}
+
+document.getElementById('restaurar-pesos').addEventListener('click', function () {
+  INDICE.componentes.forEach(function (c) { pesos[c.key] = c.peso; });
+  montarControles();
+  montarRanking();
+});
+
+montarControles();
+montarRanking();
+</script>
+{% endblock %}

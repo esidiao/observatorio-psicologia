@@ -1,0 +1,105 @@
+{#
+  base.html.j2 — esqueleto de todas as páginas.
+
+  `depth` é o prefixo relativo até a raiz ("", "../", "../../"). O site é
+  estático e servido de subdiretório no GitHub Pages, onde caminho absoluto
+  ("/static/...") aponta para fora do projeto e quebra tudo em silêncio: a
+  página carrega, sem estilo nenhum.
+#}<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block titulo %}Observatório Nacional da Formação em Psicologia{% endblock %}</title>
+<meta name="description" content="{% block descricao %}Indicadores de acesso territorial, qualidade e cobertura assistencial dos cursos de Psicologia no Brasil.{% endblock %}">
+<meta name="theme-color" content="#123F3A">
+<link rel="manifest" href="{{ depth }}manifest.json">
+<link rel="icon" href="{{ depth }}static/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="{{ depth }}static/fonts/fonts.css">
+{# As folhas de terceiros entram ANTES da do projeto.
+   O leaflet.css declara `.leaflet-touch .leaflet-bar a { width:30px }` com a
+   mesma especificidade das nossas regras; carregado depois, ele vencia por
+   ordem e os controles de zoom continuavam em 30px, abaixo do alvo de toque. #}
+{% block cabeca %}{% endblock %}
+<link rel="stylesheet" href="{{ depth }}static/css/style.css">
+</head>
+<body>
+
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<header class="topo">
+  <div class="topo-interno">
+    <a class="marca" href="{{ depth }}index.html">
+      <span class="marca-nome">Observatório Nacional da Formação em Psicologia</span>
+      <span class="marca-sub">Censo {{ panorama.ano_censo }} · CPC {{ panorama.ciclo_cpc }} · CNES · CadSUAS</span>
+    </a>
+    <nav class="nav" aria-label="Navegação principal">
+      <a href="{{ depth }}index.html">Panorama</a>
+      <a href="{{ depth }}comparar.html">Comparar</a>
+      <a href="{{ depth }}indice.html">Índice</a>
+      <a href="{{ depth }}correlacoes.html">Correlações</a>
+      <a href="{{ depth }}serie.html">Série</a>
+      <a href="{{ depth }}glossario.html">Glossário</a>
+    </nav>
+  </div>
+</header>
+
+<main id="conteudo">
+{% block conteudo %}{% endblock %}
+</main>
+
+<footer class="rodape">
+  <div class="rodape-interno">
+    <div class="rodape-bloco">
+      <h3>Fontes</h3>
+      <ul>
+        <li>Censo da Educação Superior {{ panorama.ano_censo }} — INEP</li>
+        <li>Conceito Preliminar de Curso 2023 — INEP</li>
+        <li>Cadastro Nacional de Estabelecimentos de Saúde — DATASUS</li>
+        <li>Localidades e população — IBGE</li>
+      </ul>
+    </div>
+    <div class="rodape-bloco">
+      <h3>Dados abertos</h3>
+      <ul>
+        <li><a href="{{ depth }}dados/nacional.json">nacional.json</a></li>
+        <li><a href="{{ depth }}dados/indicadores.csv">indicadores.csv</a></li>
+        <li><a href="{{ depth }}dados/observatorio-psicologia.xlsx">planilha completa (XLSX)</a></li>
+        <li><a href="{{ depth }}dados/_proveniencia.json">proveniência</a></li>
+      </ul>
+    </div>
+    <div class="rodape-bloco">
+      <h3>Sobre</h3>
+      <ul>
+        <li><a href="{{ depth }}autor.html">Autoria e direitos</a></li>
+        <li><a href="{{ depth }}aviso-legal.html">Aviso legal</a></li>
+        <li><a href="{{ depth }}glossario.html">Glossário dos indicadores</a></li>
+      </ul>
+    </div>
+  </div>
+  <p class="rodape-nota">
+    Nenhum indicador é estimado ou preenchido por analogia. Sem fonte oficial
+    para um recorte, o valor aparece como <strong>sem dados</strong> — nunca
+    como zero. Gerado em {{ gerado_em }}.
+  </p>
+  <p class="rodape-nota rodape-copyright">
+    © {{ gerado_em[:4] }} <strong>Edson Sidião de Souza Júnior</strong> —
+    obra autoral protegida pelas Leis 9.610/1998 e 9.609/1998.
+    Dados primários do INEP, do Ministério da Saúde e do IBGE, de domínio
+    público. Indicadores calculados liberados para reúso com citação.
+    <a href="{{ depth }}autor.html">Autoria e direitos</a>.
+  </p>
+</footer>
+
+<script src="{{ depth }}static/js/indicadores.js"></script>
+<script src="{{ depth }}static/js/app.js"></script>
+<script src="{{ depth }}static/js/xlsx.js"></script>
+{% block scripts %}{% endblock %}
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker
+    .register('{{ depth }}sw.js').catch(() => {}));
+}
+</script>
+</body>
+</html>
