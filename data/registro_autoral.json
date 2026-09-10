@@ -8,8 +8,8 @@
     "obra": "Observatório Nacional da Formação em Psicologia",
     "descricao": "Sítio estático data-driven com indicadores de acesso territorial, qualidade e cobertura assistencial dos cursos de Psicologia no Brasil: formulação e cálculo dos índices ICT, E, IAF, ICAP, ICRP e ICAS, catálogo de indicadores, textos e desenho editorial."
   },
-  "registrado_em": "2026-09-10T13:00:09+00:00",
-  "git_commit_ancora": "3b9dee529bbd8956817461ca9c5c2101f40dec4f",
+  "registrado_em": "2026-09-10T13:04:05+00:00",
+  "git_commit_ancora": "4456a96e9192e5cced44682ddaf4d2ad49909c25",
   "algoritmo": "SHA-256 sobre o conteúdo com fim de linha normalizado em LF",
   "fundamento": "Lei 9.610/1998 (direitos autorais) e Lei 9.609/1998 (programa de computador). O resumo combinado é impressão digital única do conjunto; o commit Git ancora a data no histórico versionado.",
   "como_verificar": [
@@ -22,10 +22,16 @@
   ],
   "natureza": "Declaração datada de conteúdo, com anterioridade ancorada no histórico do repositório. Permite comparar uma cópia com o original arquivo a arquivo. Não é registro em cartório nem depósito no INPI, e não substitui nenhum dos dois.",
   "escopo": "Apenas material autoral: código, textos, templates e o desenho dos índices. Não inclui os dados públicos (INEP, DATASUS, IBGE), que pertencem às respectivas fontes, nem bibliotecas de terceiros.",
-  "n_arquivos": 36,
-  "bytes_totais": 462444,
-  "sha256_combinado": "c9d0326842b0689528d7aac0eb1a4a10b9bd5cf4b02642c0cca5f471db4e507c",
+  "n_arquivos": 37,
+  "bytes_totais": 476357,
+  "sha256_combinado": "9e74d9991cf8d34cee86c9574fc32c2d50124652f803ae814b0f37ccd3af9f3b",
   "arquivos": [
+    {
+      "arquivo": "README.md",
+      "bytes": 13637,
+      "linhas": 293,
+      "sha256": "3f70df5e7998101ad6022b5a6ac50a3e15b311a41985138f2c6dca83b510431e"
+    },
     {
       "arquivo": "SECURITY.md",
       "bytes": 3672,
@@ -136,9 +142,9 @@
     },
     {
       "arquivo": "site/templates/autor.html.j2",
-      "bytes": 11673,
-      "linhas": 253,
-      "sha256": "06391cc5c5c6235ef753bb186bc1ed33eb2220377b7b8b68dee0259b1844b62f"
+      "bytes": 11699,
+      "linhas": 254,
+      "sha256": "f5981729abfa418b369fc31bf492de57d19b7a879cef7bc221cf7c41feeebec0"
     },
     {
       "arquivo": "site/templates/aviso-legal.html.j2",
@@ -148,9 +154,9 @@
     },
     {
       "arquivo": "site/templates/base.html.j2",
-      "bytes": 4673,
-      "linhas": 109,
-      "sha256": "1475356dd917ba8fa7d794379aa5cd875a3fd5a83d98b71fc96ef6b76e275fd5"
+      "bytes": 4923,
+      "linhas": 112,
+      "sha256": "fa635abd83ba9278587f90f5cbdf21e7174863a14456363f07af8a3d50674f6a"
     },
     {
       "arquivo": "site/templates/comparar.html.j2",

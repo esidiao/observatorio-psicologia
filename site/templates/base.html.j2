@@ -57,8 +57,11 @@
       <h3>Fontes</h3>
       <ul>
         <li>Censo da Educação Superior {{ panorama.ano_censo }} — INEP</li>
-        <li>Conceito Preliminar de Curso 2023 — INEP</li>
+        {# O ciclo sai da proveniência. Escrito à mão, ele sobrevive à troca
+           de edição e passa a creditar o ciclo errado em todas as páginas. #}
+        <li>Conceito Preliminar de Curso {{ panorama.ciclo_cpc }} — INEP</li>
         <li>Cadastro Nacional de Estabelecimentos de Saúde — DATASUS</li>
+        <li>CadSUAS — Ministério do Desenvolvimento Social</li>
         <li>Localidades e população — IBGE</li>
       </ul>
     </div>
