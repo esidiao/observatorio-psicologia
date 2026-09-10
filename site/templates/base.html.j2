@@ -12,7 +12,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{% block titulo %}Observatório Nacional da Formação em Psicologia{% endblock %}</title>
 <meta name="description" content="{% block descricao %}Indicadores de acesso territorial, qualidade e cobertura assistencial dos cursos de Psicologia no Brasil.{% endblock %}">
-<meta name="theme-color" content="#123F3A">
+<meta name="theme-color" content="#262B54">
 <link rel="manifest" href="{{ depth }}manifest.json">
 <link rel="icon" href="{{ depth }}static/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="{{ depth }}static/fonts/fonts.css">
@@ -21,7 +21,10 @@
    mesma especificidade das nossas regras; carregado depois, ele vencia por
    ordem e os controles de zoom continuavam em 30px, abaixo do alvo de toque. #}
 {% block cabeca %}{% endblock %}
-<link rel="stylesheet" href="{{ depth }}static/css/style.css">
+{# `?v=` é o resumo do conteúdo dos estáticos. Conteúdo novo, URL nova —
+   é o que impede o cache do navegador de servir o CSS anterior junto com
+   o HTML novo depois de um deploy. #}
+<link rel="stylesheet" href="{{ depth }}static/css/style.css?v={{ v }}">
 </head>
 <body>
 
@@ -91,9 +94,9 @@
   </p>
 </footer>
 
-<script src="{{ depth }}static/js/indicadores.js"></script>
-<script src="{{ depth }}static/js/app.js"></script>
-<script src="{{ depth }}static/js/xlsx.js"></script>
+<script src="{{ depth }}static/js/indicadores.js?v={{ v }}"></script>
+<script src="{{ depth }}static/js/app.js?v={{ v }}"></script>
+<script src="{{ depth }}static/js/xlsx.js?v={{ v }}"></script>
 {% block scripts %}{% endblock %}
 <script>
 if ('serviceWorker' in navigator) {

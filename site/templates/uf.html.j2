@@ -94,6 +94,19 @@
     {% endfor %}
   </div>
 
+  {% if d.municipios_com_psicologo is not none and d.municipios_total %}
+  <p class="nota">
+    {{ d.municipios_com_psicologo | numero }} dos
+    {{ d.municipios_total | numero }} municípios de {{ nome_uf }} têm psicólogo
+    vinculado ao SUS. A presença é quase universal no país — 5.523 de 5.571 —,
+    então o que separa os estados não é <em>ter</em>, é <em>quantos</em>: veja a
+    densidade por 100 mil habitantes acima. Já a rede psicossocial, presente em
+    {{ panorama.municipios_com_raps | numero }} municípios, e o CREAS, em
+    {{ panorama.municipios_com_creas | numero }}, distinguem território de
+    verdade.
+  </p>
+  {% endif %}
+
   <h3 class="subsecao-titulo">A rede psicossocial, em três recortes</h3>
   <p class="nota">
     O serviço 115 do CNES reúne onze classificações, da promoção da saúde

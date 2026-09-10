@@ -1,0 +1,129 @@
+{
+ "uf": "TO",
+ "municipios": [
+  {
+   "codigo": "1721000",
+   "nome": "Palmas",
+   "uf": "TO",
+   "vagas_presencial": 990,
+   "cursos_presencial": 3,
+   "n_ies": 3,
+   "matriculas": 1044,
+   "matriculas_ead": 1,
+   "concluintes": 103,
+   "polos_ead": 1,
+   "tem_curso_presencial": true,
+   "psicologos_sus": 221,
+   "estabelecimentos_raps": 39,
+   "servicos_raps": [
+    "115/002",
+    "115/003",
+    "115/006",
+    "115/010"
+   ],
+   "raps_comunitaria": 38,
+   "raps_residencial": 1,
+   "raps_internacao": 2,
+   "cras": 7,
+   "creas": 2
+  },
+  {
+   "codigo": "1702109",
+   "nome": "Araguaína",
+   "uf": "TO",
+   "vagas_presencial": 503,
+   "cursos_presencial": 2,
+   "n_ies": 2,
+   "matriculas": 565,
+   "matriculas_ead": 0,
+   "concluintes": 49,
+   "polos_ead": 0,
+   "tem_curso_presencial": true,
+   "psicologos_sus": 96,
+   "estabelecimentos_raps": 10,
+   "servicos_raps": [
+    "115/002",
+    "115/003",
+    "115/004"
+   ],
+   "raps_comunitaria": 10,
+   "raps_residencial": 1,
+   "raps_internacao": 1,
+   "cras": 3,
+   "creas": 1
+  },
+  {
+   "codigo": "1705508",
+   "nome": "Colinas do Tocantins",
+   "uf": "TO",
+   "vagas_presencial": 200,
+   "cursos_presencial": 1,
+   "n_ies": 1,
+   "matriculas": 27,
+   "matriculas_ead": 0,
+   "concluintes": 14,
+   "polos_ead": 0,
+   "tem_curso_presencial": true,
+   "psicologos_sus": 24,
+   "estabelecimentos_raps": 4,
+   "servicos_raps": [
+    "115/002",
+    "115/003",
+    "115/006",
+    "115/010"
+   ],
+   "raps_comunitaria": 4,
+   "raps_residencial": 1,
+   "raps_internacao": 1,
+   "cras": 3,
+   "creas": 1
+  },
+  {
+   "codigo": "1709500",
+   "nome": "Gurupi",
+   "uf": "TO",
+   "vagas_presencial": 200,
+   "cursos_presencial": 1,
+   "n_ies": 1,
+   "matriculas": 249,
+   "matriculas_ead": 0,
+   "concluintes": 39,
+   "polos_ead": 0,
+   "tem_curso_presencial": true,
+   "psicologos_sus": 72,
+   "estabelecimentos_raps": 19,
+   "servicos_raps": [
+    "115/002",
+    "115/006"
+   ],
+   "raps_comunitaria": 19,
+   "raps_residencial": 1,
+   "raps_internacao": null,
+   "cras": 3,
+   "creas": 1
+  },
+  {
+   "codigo": "1713205",
+   "nome": "Miracema do Tocantins",
+   "uf": "TO",
+   "vagas_presencial": 54,
+   "cursos_presencial": 1,
+   "n_ies": 1,
+   "matriculas": 156,
+   "matriculas_ead": 0,
+   "concluintes": 25,
+   "polos_ead": 0,
+   "tem_curso_presencial": true,
+   "psicologos_sus": 10,
+   "estabelecimentos_raps": 2,
+   "servicos_raps": [
+    "115/002"
+   ],
+   "raps_comunitaria": 2,
+   "raps_residencial": null,
+   "raps_internacao": null,
+   "cras": 1,
+   "creas": 1
+  }
+ ]
+}

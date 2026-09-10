@@ -220,10 +220,9 @@ def matriz_correlacao(ufs, eixos):
     reintroduzidos = [e for e in eixos if e in FORA_DA_MATRIZ]
     if reintroduzidos:
         raise SystemExit(
-            "[BUILD] eixos deliberadamente excluídos da matriz voltaram:
-  - "
-            + "
-  - ".join(f"{e}: {FORA_DA_MATRIZ[e]}" for e in reintroduzidos))
+            "[BUILD] eixos deliberadamente excluídos da matriz voltaram:\n  - "
+            + "\n  - ".join(f"{e}: {FORA_DA_MATRIZ[e]}"
+                             for e in reintroduzidos))
 
     siglas = sorted(ufs)
     series = {k: [ufs[s].get(k) for s in siglas] for k in eixos}
@@ -377,6 +376,10 @@ def construir(caminho_dados, saida, templates):
     (saida / "static" / "js" / "indicadores.js").write_text(
         catalogo.para_js(), encoding="utf-8")
 
+    # Depois de indicadores.js existir: ele entra no resumo.
+    versao_estatica = versao_dos_estaticos(saida)
+    print(f"[BUILD] versão dos estáticos: {versao_estatica}")
+
     env = Environment(loader=FileSystemLoader(str(templates)),
                       autoescape=select_autoescape(["html"]))
     env.filters["json"] = _json
@@ -453,6 +456,14 @@ def construir(caminho_dados, saida, templates):
         "catalogo": catalogo.INDICADORES,
         "categorias": catalogo.CATEGORIAS,
         "categoria_ead": catalogo.CATEGORIA_EAD,
+        # Os campos que existem no nível de UF. O catálogo cobre também os que
+        # só aparecem em páginas municipais — `polos_ead`, `cras`, `creas` — e
+        # uma tela que compara ESTADOS não pode oferecê-los: viram colunas
+        # vazias e, pior, chips repetidos, porque a sigla do campo municipal é
+        # igual à do agregado estadual ("CRAS" aparecia duas vezes).
+        "campos_uf_json": _json(sorted(campos_uf)),
+        "campos_uf": campos_uf,
+        "v": versao_estatica,
         "campos_ead": campos_ead,
         "gerado_em": date.today().isoformat(),
     }
@@ -518,9 +529,30 @@ def construir(caminho_dados, saida, templates):
             shutil.copy(origem, saida / "dados" / nome)
     print("[BUILD] dados abertos em dados/")
 
-    escrever_pwa(saida, panorama)
+    escrever_pwa(saida, panorama, versao_estatica)
     print(f"[BUILD] -> {saida}")
     return saida
+
+
+# Estáticos cuja URL leva `?v=<resumo do conteúdo>`. São os que mudam a
+# cada alteração do projeto; fontes, malhas e imagens não entram porque
+# são estáveis e pesados, e renová-los à toa custaria banda do leitor.
+ESTATICOS_VERSIONADOS = [
+    "static/css/style.css",
+    "static/js/indicadores.js",
+    "static/js/app.js",
+    "static/js/xlsx.js",
+]
+
+
+def versao_dos_estaticos(saida):
+    """Resumo curto do conteúdo dos estáticos versionados, juntos."""
+    resumo = hashlib.sha256()
+    for relativo in ESTATICOS_VERSIONADOS:
+        caminho = saida / relativo
+        if caminho.exists():
+            resumo.update(caminho.read_bytes())
+    return resumo.hexdigest()[:10]
 
 
 # Arquivos que o service worker guarda de saída. Declarados aqui em cima
@@ -535,7 +567,7 @@ ESSENCIAIS_CACHE = [
 ]
 
 
-def escrever_pwa(saida, panorama):
+def escrever_pwa(saida, panorama, versao_estatica):
     manifesto = {
         # `id` fixa a identidade do app entre instalações. Sem ele, mudar
         # start_url faz o sistema tratar como OUTRO aplicativo e o usuário
@@ -600,7 +632,14 @@ def escrever_pwa(saida, panorama):
         if caminho.exists():
             resumo.update(caminho.read_bytes())
     versao = f"psi-{panorama.get('ano_censo')}-{resumo.hexdigest()[:12]}"
-    essenciais_js = json.dumps(["./"] + ["./" + x for x in ESSENCIAIS_CACHE])
+    # As URLs que o SW guarda têm de ser as MESMAS que a página pede. Um
+    # estático versionado é pedido como `app.js?v=abc`; pré-carregá-lo sem
+    # a query encheria o cache com uma entrada que nunca casa, e toda
+    # visita offline cairia na rede.
+    versionado = set(ESTATICOS_VERSIONADOS)
+    essenciais_js = json.dumps(
+        ["./"] + ["./" + x + (f"?v={versao_estatica}" if x in versionado else "")
+                  for x in ESSENCIAIS_CACHE])
     (saida / "sw.js").write_text(f"""/* Service worker do Observatório.
    Cache-first para estáticos, rede-primeiro para as páginas.
 
@@ -611,7 +650,21 @@ const CACHE = '{versao}';
 const ESSENCIAIS = {essenciais_js};
 
 self.addEventListener('install', e => {{
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ESSENCIAIS)).then(() => self.skipWaiting()));
+  /* `cache: 'reload'` em cada pedido do install.
+     `addAll` simples deixa cada requisicao passar pelo CACHE HTTP do
+     navegador, e o cache HTTP pode estar com a versao anterior — no GitHub
+     Pages, por ate dez minutos. O service worker entao GRAVA os bytes velhos
+     sob a chave nova, e a partir dai serve-os cache-first indefinidamente: o
+     deploy foi feito, a chave mudou, e o leitor continua com o arquivo
+     antigo. Foi assim que o CSS velho sobreviveu a um deploy no projeto
+     irmao. Com `reload`, o install busca da rede e o cache nasce correto. */
+  e.waitUntil(
+    caches.open(CACHE)
+      .then(c => Promise.all(ESSENCIAIS.map(u =>
+        fetch(new Request(u, {{cache: 'reload'}}))
+          .then(r => r.ok ? c.put(u, r) : null)
+          .catch(() => null))))
+      .then(() => self.skipWaiting()));
 }});
 
 self.addEventListener('activate', e => {{

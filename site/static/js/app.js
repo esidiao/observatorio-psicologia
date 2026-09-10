@@ -13,10 +13,42 @@
 const SEM_DADOS = 'sem dados';
 const COR_SEM_DADOS = '#C9CDD2';
 
-const RDBU = ['#2166AC', '#4393C3', '#92C5DE', '#D1E5F0', '#F7F7F7',
-              '#FDDBC7', '#F4A582', '#D6604D', '#B2182B'];
-const SEQ = ['#EDF6F4', '#CFE7E3', '#A6D3CC', '#74B8AF',
-             '#479B92', '#2A7D74', '#1B6259', '#123F3A'];
+/* As escalas saem das VARIÁVEIS DO CSS, não de uma cópia aqui.
+   Duas listas com a mesma informação divergem em silêncio: ao trocar a paleta
+   deste projeto, o CSS virou índigo e esta cópia continuou teal — a tabela do
+   índice e todo mapa de indicador sequencial passaram a desenhar na cor do
+   observatório irmão, sem erro no console e sem nada que acusasse. É o mesmo
+   defeito que o catálogo único de indicadores existe para impedir, cometido na
+   camada de cor.
+
+   A lista literal fica só como socorro: se o CSS não tiver carregado quando
+   isto rodar, um mapa cinza é pior que um mapa em cor aproximada. */
+/* Cor institucional pelo NOME do token. Mesma razão de `_escalaDoCss`:
+   hexadecimal repetido no JS é uma cópia que sobrevive à troca de
+   paleta e passa a mostrar a cor de outro projeto. */
+function cor(nome, reserva) {
+  const v = getComputedStyle(document.documentElement)
+    .getPropertyValue('--' + nome).trim();
+  return v || reserva || '#262B54';
+}
+
+function _escalaDoCss(prefixo, n, reserva) {
+  const raiz = getComputedStyle(document.documentElement);
+  const cores = [];
+  for (let i = 1; i <= n; i++) {
+    const c = raiz.getPropertyValue('--' + prefixo + '-' + i).trim();
+    if (!c) return reserva;
+    cores.push(c);
+  }
+  return cores;
+}
+
+const RDBU = _escalaDoCss('rdbu', 9,
+  ['#2166AC', '#4393C3', '#92C5DE', '#D1E5F0', '#F7F7F7',
+   '#FDDBC7', '#F4A582', '#D6604D', '#B2182B']);
+const SEQ = _escalaDoCss('seq', 8,
+  ['#EFF1F9', '#D8DCEF', '#BCC3E2', '#9AA4D0',
+   '#7784BC', '#43509A', '#333A72', '#262B54']);
 
 /* ------------------------------------------------------------------
  * Formatação
@@ -148,6 +180,85 @@ function montarLegenda(alvo, chave, valores) {
 }
 
 /* ------------------------------------------------------------------
+ * Célula colorida: o texto escolhe a cor pelo fundo que recebeu
+ * ------------------------------------------------------------------ */
+
+/* Uma escala sequencial vai do quase branco ao índigo profundo, e uma
+   divergente vai do azul escuro ao vermelho escuro passando pelo branco.
+   NENHUMA cor fixa de texto serve para as duas pontas: escura some no extremo
+   escuro, clara some no claro. Medido no site: o primeiro colocado do ranking
+   saía com contraste 1,33, e o rho mais forte da matriz com 2,81 — nas duas
+   células que a cor manda o leitor olhar primeiro.
+
+   `pintarCelula` mede a luminância relativa do fundo e escolhe entre o texto
+   institucional e o papel claro, ficando com o que tiver mais contraste. */
+function _luminancia(cor) {
+  const m = String(cor).match(/[\d.]+/g);
+  if (!m || m.length < 3) return 1;
+  const f = v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+  return 0.2126 * f(+m[0]) + 0.7152 * f(+m[1]) + 0.0722 * f(+m[2]);
+}
+
+function _hexParaRgb(cor) {
+  const h = String(cor).trim();
+  if (h.charAt(0) !== '#') return h;
+  const n = h.length === 4
+    ? h.slice(1).split('').map(c => c + c)
+    : [h.slice(1, 3), h.slice(3, 5), h.slice(5, 7)];
+  return 'rgb(' + n.map(x => parseInt(x, 16)).join(', ') + ')';
+}
+
+function _contraste(a, b) {
+  const l1 = _luminancia(a), l2 = _luminancia(b);
+  return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+}
+
+const TEXTO_ESCURO = 'rgb(26, 29, 51)';
+const TEXTO_CLARO = 'rgb(243, 244, 250)';
+
+const PAPEL = [250, 250, 252];
+
+function _canais(cor) {
+  const m = String(_hexParaRgb(cor)).match(/[\d.]+/g);
+  return m ? m.slice(0, 3).map(Number) : [255, 255, 255];
+}
+
+function _rgb(c) {
+  return 'rgb(' + c.map(v => Math.round(v)).join(', ') + ')';
+}
+
+/* Clareia a cor em direção ao papel até o texto escuro alcançar `alvo`.
+   Devolve a primeira mistura que passa, ou o papel puro se nem ele bastar —
+   o que não acontece, porque o papel contra o texto mede quase 15. */
+function _clarearAte(cor, alvo) {
+  const base = _canais(cor);
+  for (let passo = 0; passo <= 20; passo++) {
+    const t = passo / 20;
+    const mistura = base.map((v, i) => v + (PAPEL[i] - v) * t);
+    if (_contraste(TEXTO_ESCURO, _rgb(mistura)) >= alvo) return _rgb(mistura);
+  }
+  return _rgb(PAPEL);
+}
+
+function pintarCelula(td, cor) {
+  const rgb = _hexParaRgb(cor);
+  const escuro = _contraste(TEXTO_ESCURO, rgb);
+  const claro = _contraste(TEXTO_CLARO, rgb);
+  if (Math.max(escuro, claro) >= 4.5) {
+    td.style.background = cor;
+    td.style.color = escuro >= claro ? TEXTO_ESCURO : TEXTO_CLARO;
+    return;
+  }
+  /* Tom intermediário: não carrega texto escuro nem claro. Em vez de aceitar
+     um contraste ruim — ou de esvaziar a célula, o que interrompe o degradê
+     no meio e o leitor lê como defeito —, o fundo é clareado em direção ao
+     papel até o texto escuro passar. O degradê continua contínuo e o número
+     continua legível. */
+  td.style.background = _clarearAte(cor, 4.5);
+  td.style.color = TEXTO_ESCURO;
+}
+
+/* ------------------------------------------------------------------
  * Mapas
  * ------------------------------------------------------------------ */
 
@@ -228,7 +339,7 @@ function desenharMalha(mapa, geojson, opcoes) {
       camadaFeicao.bindTooltip(div, { sticky: true });
 
       camadaFeicao.on('mouseover', function () {
-        this.setStyle({ weight: 2.5, color: '#123F3A' });
+        this.setStyle({ weight: 2.5, color: cor('deep') });
         this.bringToFront();
       });
       camadaFeicao.on('mouseout', function () {

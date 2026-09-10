@@ -1,0 +1,31 @@
+{
+ "uf": "RR",
+ "municipios": [
+  {
+   "codigo": "1400100",
+   "nome": "Boa Vista",
+   "uf": "RR",
+   "vagas_presencial": 1085,
+   "cursos_presencial": 5,
+   "n_ies": 5,
+   "matriculas": 1190,
+   "matriculas_ead": 0,
+   "concluintes": 95,
+   "polos_ead": 0,
+   "tem_curso_presencial": true,
+   "psicologos_sus": 160,
+   "estabelecimentos_raps": 53,
+   "servicos_raps": [
+    "115/002",
+    "115/003",
+    "115/006",
+    "115/010"
+   ],
+   "raps_comunitaria": 53,
+   "raps_residencial": 1,
+   "raps_internacao": 3,
+   "cras": 8,
+   "creas": 2
+  }
+ ]
+}

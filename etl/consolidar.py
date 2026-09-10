@@ -270,11 +270,24 @@ def limitacoes(ufs, qualidade, cobertura, suas):
 
     if cobertura:
         itens.append(
-            "A rede psicossocial é publicada em três subgrupos — comunitário, "
-            "moradia assistida e leito/regime fechado — e não somada num só "
-            "número. Fundi-los mediria como equivalentes serviços que a "
+            "A rede psicossocial (serviço 115 do CNES, ATENÇÃO PSICOSSOCIAL) é "
+            "publicada em três subgrupos — comunitário, moradia assistida e "
+            "leito/regime fechado — e não somada num só número. Fundir as onze "
+            "classificações do 115 mediria como equivalentes serviços que a "
             "política pública trata como opostos. O total conta "
-            "estabelecimentos distintos, então NÃO é a soma dos três.")
+            "estabelecimentos distintos, então NÃO é a soma dos três. O "
+            "agrupamento em três é decisão editorial deste observatório, não "
+            "classificação oficial do Ministério da Saúde.")
+        com_psicologo = sum(d.get("municipios_com_psicologo") or 0
+                            for d in ufs.values())
+        total_mun = sum(d.get("municipios_total") or 0 for d in ufs.values())
+        itens.append(
+            f"A cobertura por força de trabalho está quase saturada: "
+            f"{com_psicologo} dos {total_mun} municípios têm psicólogo "
+            "vinculado ao SUS. O ICAP continua medindo diferença real — há "
+            "estado com um em cada oito municípios sem nenhum psicólogo — mas "
+            "separa pouco. Quem quiser comparar a densidade das redes deve "
+            "olhar psicólogos por 100 mil habitantes, que varia bem mais.")
     else:
         itens.append("A base do CNES não foi lida; a cobertura assistencial de "
                      "saúde está nula, não zerada.")

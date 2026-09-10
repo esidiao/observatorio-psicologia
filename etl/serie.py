@@ -16,6 +16,17 @@ projeto inteiro, vale para trás sem adaptação. Aqui ele é indispensável:
 `Psicopedagogia` tem 6.083 registros contra 1.372 de `Psicologia`, e uma
 substring inverteria a série inteira.
 
+O TOTAL NACIONAL DE IES NÃO É A SOMA DAS UFs
+---------------------------------------------
+Uma instituição que oferta em três estados aparece nas três contagens
+estaduais. Somá-las devolve 1.068 para o Censo 2024, contra 1.032 distintas —
+e a home publica 1.032, lido do mesmo arquivo. Duas páginas do mesmo site com
+números diferentes para a mesma coisa é pior que um número errado sozinho.
+
+Por isso o conjunto nacional de códigos de IES é contado durante a LEITURA,
+quando os códigos ainda estão à mão, e guardado no cache do ano. Os demais
+campos somam sem problema: município pertence a uma UF só.
+
 POUCOS CAMPOS, DE PROPÓSITO
 ---------------------------
 A série guarda apenas o que é comparável entre edições. Campos de perfil e
@@ -70,7 +81,14 @@ def agregar_ano(ano, rotulo="Psicologia"):
     cache = DADOS / f"serie_{ano}.json"
     if cache.exists():
         print(f"[SERIE] {ano}: usando agregado em cache")
-        return json.loads(cache.read_text(encoding="utf-8"))
+        guardado = json.loads(cache.read_text(encoding="utf-8"))
+        # Formato antigo: o cache era o mapa de UFs direto, sem bloco nacional.
+        # Aceitá-lo é preciso — apagar caches bons custaria uma releitura de
+        # 400 MB por ano — mas ele não tem como informar o total distinto, e
+        # nesse caso o total sai nulo em vez de sair errado.
+        if "ufs" not in guardado:
+            return {"ufs": guardado, "brasil": None}
+        return guardado
 
     url = URL_CENSO.format(ano=ano)
     existe, detalhe = sondar(url)
@@ -100,6 +118,7 @@ def agregar_ano(ano, rotulo="Psicologia"):
                 uf_sede[codigo] = sigla
 
     alvo_norm = normalizar(rotulo)
+    ies_do_pais = set()
     ufs = defaultdict(lambda: {
         "vagas_presencial": 0, "vagas_ead": 0, "n_cursos_presencial": 0,
         "ead_polos_registros": 0, "matriculas": 0, "concluintes": 0,
@@ -123,6 +142,7 @@ def agregar_ano(ano, rotulo="Psicologia"):
                 sigla = uf_sede.get(cod_ies)
             if not sigla:
                 continue
+            ies_do_pais.add(cod_ies)
             d = ufs[sigla]
             d["_ies"].add(cod_ies)
             d["matriculas"] += inteiro(linha.get("QT_MAT"))
@@ -153,12 +173,13 @@ def agregar_ano(ano, rotulo="Psicologia"):
             "concluintes": d["concluintes"],
         }
 
+    agregado = {"ufs": saida, "brasil": {"n_ies": len(ies_do_pais)}}
     print(f"[SERIE] {ano}: {lidas} linhas, {casadas} do rótulo exato, "
-          f"{len(saida)} UFs")
+          f"{len(saida)} UFs, {len(ies_do_pais)} IES distintas no país")
     DADOS.mkdir(parents=True, exist_ok=True)
-    cache.write_text(json.dumps(saida, ensure_ascii=False, indent=1),
+    cache.write_text(json.dumps(agregado, ensure_ascii=False, indent=1),
                      encoding="utf-8")
-    return saida
+    return agregado
 
 
 def main():
@@ -169,11 +190,12 @@ def main():
     p.add_argument("--saida", default=str(DATA / "serie.json"))
     args = p.parse_args()
 
-    por_ano = {}
+    por_ano, nacional_por_ano = {}, {}
     for ano in sorted(args.anos):
         agregado = agregar_ano(ano, args.rotulo)
-        if agregado:
-            por_ano[str(ano)] = agregado
+        if agregado and agregado["ufs"]:
+            por_ano[str(ano)] = agregado["ufs"]
+            nacional_por_ano[str(ano)] = agregado["brasil"]
 
     if len(por_ano) < 2:
         raise SystemExit(
@@ -189,10 +211,24 @@ def main():
         ufs[sigla] = {ano: por_ano[ano].get(sigla) for ano in anos}
 
     brasil = {}
+    sem_total_distinto = []
     for ano in anos:
         brasil[ano] = {campo: sum((por_ano[ano].get(s) or {}).get(campo) or 0
                                   for s in siglas)
                        for campo in CAMPOS}
+        # `n_ies` é o único campo em que a soma das UFs não é o total do país:
+        # uma instituição que oferta em três estados entra em três contagens.
+        # Vem do conjunto nacional, ou fica nulo — nunca a soma.
+        distinto = (nacional_por_ano.get(ano) or {}).get("n_ies")
+        brasil[ano]["n_ies"] = distinto
+        if distinto is None:
+            sem_total_distinto.append(ano)
+    if sem_total_distinto:
+        print(f"[SERIE] atenção: {', '.join(sem_total_distinto)} vieram de "
+              "cache antigo, sem o conjunto nacional de IES. O total do país "
+              "fica NULO nesses anos — a soma das UFs contaria em dobro quem "
+              "oferta em mais de um estado. Apague etl/dados/serie_<ano>.json "
+              "e rode de novo para preencher.")
 
     saida = {
         "metadados": {
@@ -203,6 +239,11 @@ def main():
                 "Somente campos com significado estável entre edições. Campos "
                 "de perfil e qualidade mudam de definição entre anos e não "
                 "entram na série."
+            ),
+            "n_ies_no_brasil": (
+                "Instituições DISTINTAS no país, contadas sobre o conjunto "
+                "nacional de códigos — não a soma das contagens estaduais, que "
+                "conta em dobro quem oferta em mais de um estado."
             ),
             "gerado_em": date.today().isoformat(),
         },

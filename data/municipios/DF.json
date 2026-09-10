@@ -1,0 +1,33 @@
+{
+ "uf": "DF",
+ "municipios": [
+  {
+   "codigo": "5300108",
+   "nome": "Brasília",
+   "uf": "DF",
+   "vagas_presencial": 8376,
+   "cursos_presencial": 28,
+   "n_ies": 23,
+   "matriculas": 10929,
+   "matriculas_ead": 4,
+   "concluintes": 1470,
+   "polos_ead": 2,
+   "tem_curso_presencial": true,
+   "psicologos_sus": 605,
+   "estabelecimentos_raps": 844,
+   "servicos_raps": [
+    "115/002",
+    "115/003",
+    "115/005",
+    "115/006",
+    "115/008",
+    "115/010"
+   ],
+   "raps_comunitaria": 841,
+   "raps_residencial": 2,
+   "raps_internacao": 15,
+   "cras": 32,
+   "creas": 15
+  }
+ ]
+}

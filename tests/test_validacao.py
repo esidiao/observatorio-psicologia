@@ -297,6 +297,36 @@ def test_cobertura_socioassistencial():
     assert _soma(ufs, "municipios_com_creas") == MUNICIPIOS_COM_CREAS
 
 
+def test_icap_esta_quase_saturado_e_isso_esta_dito():
+    """
+    Registra a saturação do ICAP, que muda como ele deve ser lido.
+
+    5.523 dos 5.571 municípios têm psicólogo vinculado ao SUS. O índice
+    continua legítimo — 87,5% no Amapá contra 100% em São Paulo é diferença
+    real, e um em cada oito municípios amapaenses sem nenhum psicólogo é um
+    fato —, mas ele separa pouco, e quem o ler como se fosse o retrato da rede
+    vai concluir que o país inteiro está igualmente atendido. A medida que
+    separa é a densidade.
+
+    Se um dia a cobertura cair a ponto de a amplitude alargar, a ressalva deixa
+    de fazer sentido e este teste é onde isso aparece.
+    """
+    ufs = _ler("nacional.json")["ufs"]
+    valores = [d["ICAP"] for d in ufs.values() if d.get("ICAP") is not None]
+    assert len(valores) == 27
+    assert min(valores) > 0.8, (
+        f"ICAP mínimo em {min(valores):.3f}. Abaixo de 0,8 a amplitude deixa "
+        "de ser estreita e as ressalvas de saturação precisam ser revistas.")
+    # A densidade, que é a medida discriminante, tem de existir em toda UF.
+    densidades = [d.get("psicologos_por_100k") for d in ufs.values()]
+    assert all(v is not None for v in densidades), (
+        "psicologos_por_100k ausente em alguma UF — é ela que separa os "
+        "estados onde o ICAP satura")
+    assert max(densidades) / min(densidades) > 1.5, (
+        "a densidade deveria variar bem mais que o ICAP; se não varia, o "
+        "argumento de que ela é a medida discriminante caiu")
+
+
 def test_cras_e_quase_universal_e_por_isso_nao_e_indice():
     """
     Documenta a razão de o CRAS não ter índice de cobertura.

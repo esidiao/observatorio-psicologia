@@ -1,0 +1,150 @@
+{
+  "gerado_em": "2026-09-10",
+  "fontes": {
+    "censo": {
+      "presente": true,
+      "fonte": "Censo da Educação Superior (INEP)",
+      "url": "https://download.inep.gov.br/microdados/microdados_censo_da_educacao_superior_2024.zip",
+      "ano_censo": 2024,
+      "membro_cursos": "microdados_censo_da_educacao_superior_2024/dados/MICRODADOS_CADASTRO_CURSOS_2024.CSV",
+      "membro_ies": "microdados_censo_da_educacao_superior_2024/dados/MICRODADOS_ED_SUP_IES_2024.CSV",
+      "rotulo_cine": "Psicologia",
+      "md5_publicado": "dbe25e67857aa68b12beaeffa194f53f *MICRODADOS_CADASTRO_IES_2024.csv\r\n4ada15841c698a47ec19d6cb53ac2c13 *MICRODADOS_CADASTRO_CURSOS_2024.csv",
+      "linhas_cadastro": 720349,
+      "linhas_curso": 1372,
+      "ies_cadastradas": 2561,
+      "extraido_em": "2026-09-09"
+    },
+    "cpc": {
+      "presente": true,
+      "fonte": "Conceito Preliminar de Curso (INEP)",
+      "url": "https://download.inep.gov.br/educacao_superior/indicadores/resultados/2022/cpc_2022.xlsx",
+      "ciclo": "2022",
+      "area_avaliacao": "PSICOLOGIA",
+      "match": "igualdade sobre o rótulo normalizado, nunca substring",
+      "ponderacao": "média ponderada por concluintes participantes, 3 casas",
+      "componente_q_do_iaf": "CPC (Faixa), escala 1 a 5",
+      "cursos_avaliados": 746,
+      "ufs_avaliadas": 27,
+      "extraido_em": "2026-09-09"
+    },
+    "cnes": {
+      "presente": true,
+      "fonte": "Cadastro Nacional de Estabelecimentos de Saúde (CNES/DATASUS)",
+      "arquivo": "BASE_DE_DADOS_CNES_202607.ZIP",
+      "url": "ftp://ftp.datasus.gov.br/cnes/BASE_DE_DADOS_CNES_202607.ZIP",
+      "competencia": "202607",
+      "cbo_familia": "2515",
+      "cbo_ocupacoes": {
+        "251505": "PSICOLOGO EDUCACIONAL",
+        "251510": "PSICOLOGO CLINICO",
+        "251515": "PSICOLOGO DO ESPORTE",
+        "251520": "PSICOLOGO HOSPITALAR",
+        "251525": "PSICOLOGO JURIDICO",
+        "251530": "PSICOLOGO SOCIAL",
+        "251535": "PSICOLOGO DO TRANSITO",
+        "251540": "PSICOLOGO DO TRABALHO",
+        "251545": "NEUROPSICOLOGO",
+        "251550": "PSICANALISTA",
+        "251555": "PSICOLOGO ACUPUNTURISTA"
+      },
+      "cbo_criterio": "prefixo exato da família 2515. Casar por texto capturaria 232160 (professor de Psicologia no ensino médio), 234760 (professor do ensino superior) e 203525 (pesquisador em Psicologia) — docência e pesquisa, não assistência.",
+      "servico": "115",
+      "servico_nome": "ATENCAO PSICOSSOCIAL",
+      "subgrupos": {
+        "comunitaria": {
+          "rotulo": "Atenção psicossocial comunitária (aberta)",
+          "classificacoes": {
+            "115/002": "ATENDIMENTO PSICOSSOCIAL",
+            "115/010": "DESINST DE PESSOAS COM TRANSTORNO MENTAL CONFLITO COM A LEI",
+            "115/011": "PROMOCAO DA SAUDE MENTAL PROTAGONISMO E CIDADANIA"
+          }
+        },
+        "residencial": {
+          "rotulo": "Moradia assistida e acolhimento",
+          "classificacoes": {
+            "115/001": "RESIDENCIA TERAPEUTICA EM SAUDE MENTAL",
+            "115/004": "SERVICO RESIDENCIAL TERAPEUTICO TIPO I  - SRT TIPO I",
+            "115/005": "SERVICO RESIDENCIAL TERAPEUTICO TIPO II - SRT TIPO II",
+            "115/006": "UA ADULTO",
+            "115/007": "UA INFANTOJUVENIL"
+          }
+        },
+        "internacao": {
+          "rotulo": "Leito e regime fechado",
+          "classificacoes": {
+            "115/003": "SERVICO HOSPITALAR PARA ATENCAO A SAUDE MENTAL",
+            "115/008": "UNIDADE DE ATENCAO EM REGIME RESIDENCIAL",
+            "115/009": "TRAT EM REG INTERNACAO P/ TRANSTORNOS MENTAIS E DEP QUIMICA"
+          }
+        }
+      },
+      "subgrupos_nao_somam_o_total": "O total conta estabelecimentos distintos com qualquer classificação do serviço 115. Como um mesmo estabelecimento pode declarar mais de uma, a soma dos três subgrupos é maior que o total — e não deve ser usada no lugar dele.",
+      "tabelas_auxiliares_nao_usadas": "rlEstabAtenPsico e rlMunAtenPsico existem nesta base e NÃO foram usadas como cadastro da rede: a primeira tem cerca de 1.400 registros, bem menos que o número conhecido de CAPS, e suas colunas descrevem atributos de acolhimento (estrutura, vagas de acolhimento noturno, profissional de referência), não a existência do serviço. A existência sai de rlEstabServClass, que é tabela-fato de serviço declarado.",
+      "extraido_em": "2026-09-10",
+      "diagnostico": {
+        "vinculos_psicologia": 168894,
+        "vinculos_por_cbo": {
+          "251505": 480,
+          "251510": 157894,
+          "251515": 24,
+          "251520": 5599,
+          "251525": 35,
+          "251530": 768,
+          "251535": 582,
+          "251540": 624,
+          "251545": 2100,
+          "251550": 696,
+          "251555": 92
+        },
+        "vinculos_em_estabelecimento_desabilitado": 311,
+        "vinculos_sem_cadastro": 0,
+        "servicos_psicossociais": 28372,
+        "servicos_marcados_inativos": 0,
+        "servicos_em_estabelecimento_desabilitado": 4427,
+        "servicos_sem_cadastro": 0,
+        "classificacoes_nao_agrupadas": {}
+      }
+    },
+    "cadsuas": {
+      "presente": true,
+      "fonte": "CadSUAS, pela API MI Social (SAGI/MDS)",
+      "url": "https://aplicacoes.mds.gov.br/sagi/servicos/misocial?q=anomes:202608",
+      "anomes": "202608",
+      "data_extracao_declarada_pela_fonte": [
+        "2026-08-25 07:00:12"
+      ],
+      "municipios_lidos": 5571,
+      "municipios_com_cras": 5559,
+      "municipios_com_creas": 2758,
+      "cras_total": 8977,
+      "creas_total": 3039,
+      "por_que_nao_o_censo_suas": "O microdado do Censo SUAS não foi usado porque o catálogo da SAGI responde, em setembro de 2026, com aviso de indisponibilidade por restrição de período eleitoral, e o conjunto CadSUAS no Portal Brasileiro de Dados Abertos exige chave de API (401). A API MI Social publica o mesmo cadastro agregado por município, e é pública.",
+      "psicologos_no_suas_indisponivel": "Não há contagem de psicólogos no SUAS. O CadSUAS publica total de profissionais por unidade, sem abertura por ocupação — não existe equivalente do CBO do CNES. Derivar a contagem da equipe mínima da NOB-RH/SUAS seria estimativa disfarçada de medição. O indicador não existe e não foi substituído por aproximação.",
+      "cras_nao_vira_indice_de_cobertura": "5559 dos 5571 municípios têm ao menos um CRAS. Uma fração que vale praticamente 1 em toda UF não ordena nada, então o CRAS é publicado como contagem e como densidade por 100 mil habitantes. O CREAS, presente em 2758 municípios, vira índice de cobertura.",
+      "extraido_em": "2026-09-09"
+    },
+    "ibge_municipios": {
+      "presente": true,
+      "fonte": "https://servicodados.ibge.gov.br/api/v1/localidades/municipios?view=nivelado",
+      "total": 5571
+    },
+    "ibge_populacao": {
+      "presente": true,
+      "agregado": 6579,
+      "variavel": 9324,
+      "nivel": "N3",
+      "ano": "2026"
+    }
+  },
+  "limitacoes_conhecidas": [
+    "A EaD quase não existe em Psicologia: 549 vagas a distância contra 276250 presenciais. 25 das 27 UFs não têm nenhuma vaga EaD e 4 não têm nenhum polo (AC, AP, RO, RR). Esses valores são ZERO medido, não ausência de dado, e os indicadores derivados da EaD são publicados assim — nulos só onde a apuração realmente faltou.",
+    "HHI por instituição e HHI por mantenedora ficam próximos em quase toda UF. Nos observatórios em que a EaD é grande, a distância entre os dois mede o peso dos grandes grupos educacionais; aqui, com 0,2% da capacidade a distância, não há esse peso a revelar. A proximidade é achado, não erro de cálculo.",
+    "Todas as 27 UFs têm curso avaliado no ciclo do CPC 2022 — cobertura de avaliação total, ao contrário do que ocorre em cursos menores.",
+    "A rede psicossocial (serviço 115 do CNES, ATENÇÃO PSICOSSOCIAL) é publicada em três subgrupos — comunitário, moradia assistida e leito/regime fechado — e não somada num só número. Fundir as onze classificações do 115 mediria como equivalentes serviços que a política pública trata como opostos. O total conta estabelecimentos distintos, então NÃO é a soma dos três. O agrupamento em três é decisão editorial deste observatório, não classificação oficial do Ministério da Saúde.",
+    "A cobertura por força de trabalho está quase saturada: 5523 dos 5571 municípios têm psicólogo vinculado ao SUS. O ICAP continua medindo diferença real — há estado com um em cada oito municípios sem nenhum psicólogo — mas separa pouco. Quem quiser comparar a densidade das redes deve olhar psicólogos por 100 mil habitantes, que varia bem mais.",
+    "Não existe contagem de psicólogos no SUAS. O CadSUAS publica total de profissionais por unidade, sem abertura por ocupação — não há equivalente do CBO do CNES. A cobertura socioassistencial mede presença de CREAS, não presença de psicólogo nele.",
+    "O CRAS existe em 5559 dos 5571 municípios. Uma fração que vale praticamente 1 em toda UF não ordena nada, então o CRAS é publicado como contagem e densidade, e só o CREAS vira índice de cobertura.",
+    "A fonte socioassistencial é o CadSUAS pela API MI Social da SAGI, não o microdado do Censo SUAS: em setembro de 2026 o catálogo de microdados da SAGI responde com aviso de indisponibilidade por restrição de período eleitoral, e o conjunto CadSUAS no Portal Brasileiro de Dados Abertos exige chave de API."
+  ]
+}

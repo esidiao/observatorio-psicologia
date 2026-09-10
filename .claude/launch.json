@@ -4,8 +4,8 @@
     {
       "name": "observatorio-psicologia",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "7376", "--directory", "site/dist"],
-      "port": 7376,
+      "runtimeArgs": ["-m", "http.server", "7377", "--directory", "site/dist"],
+      "port": 7377,
       "autoPort": false
     }
   ]

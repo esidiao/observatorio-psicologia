@@ -16,10 +16,10 @@
   <div class="aviso">
     <strong>Como ler.</strong> Cada célula traz ρ, o valor de p e o
     <em>n</em> — o número de estados em que ambos os indicadores existem. Com n
-    perto de 24, um |ρ| de 0,40 já cruza p&nbsp;&lt;&nbsp;0,05 e ainda assim
-    descreve uma nuvem larga. Correlação não é causa, e com este n ela também
-    não é precisão. Nenhum par foi imputado: quando falta um dos dois valores,
-    o estado sai da conta e o n cai.
+    de {{ panorama.n_ufs }}, um |ρ| de 0,40 já cruza p&nbsp;&lt;&nbsp;0,05 e
+    ainda assim descreve uma nuvem larga. Correlação não é causa, e com este n
+    ela também não é precisão. Nenhum par foi imputado: quando falta um dos
+    dois valores, o estado sai da conta e o n cai.
   </div>
 </section>
 
@@ -33,6 +33,7 @@
   </div>
   <div class="tabela-rolagem">
     <table id="tabela-correlacoes" data-ordenavel>
+      <caption class="so-leitor">Correlações de Spearman entre pares de indicadores, com rho, valor de p e número de estados</caption>
       <caption class="so-leitor">Correlações de Spearman entre pares de indicadores</caption>
       <thead>
         <tr>
@@ -49,9 +50,15 @@
   <p class="tabela-dica">Role a tabela para o lado para ver as demais colunas.</p>
   <p class="nota">
     {{ correlacoes | length }} pares calculados entre {{ eixos | length }}
-    indicadores. A lista é curta de propósito: cruzar todos os 60 indicadores
-    daria mais de 1.700 pares, dos quais dezenas passariam de p&nbsp;&lt;&nbsp;0,05
-    só pelo número de tentativas. Isso não é análise, é pesca.
+    indicadores. A lista é curta de propósito: cruzar os
+    {{ catalogo | length }} indicadores do catálogo daria
+    {{ (catalogo | length) * ((catalogo | length) - 1) // 2 }} pares, dos quais
+    dezenas passariam de p&nbsp;&lt;&nbsp;0,05 só pelo número de tentativas.
+    Isso não é análise, é pesca. Ficam de fora, além disso, os indicadores sem
+    variação que sustente correlação — a participação da EaD, por exemplo, vale
+    zero em {{ panorama.n_ufs_sem_ead }} dos {{ panorama.n_ufs }} estados, e um
+    ρ calculado sobre {{ panorama.n_ufs_sem_ead }} empates mede o desempate de
+    dois pontos, não associação.
   </p>
 </section>
 
@@ -82,6 +89,7 @@
       {% if m.r2_ajustado is not none %}· R² ajustado = {{ '%.3f'|format(m.r2_ajustado) }}{% endif %}
     </p>
     <table class="tabela-simples">
+      <caption class="so-leitor">Coeficientes da regressão múltipla, com erro-padrão e valor de p</caption>
       <thead><tr><th scope="col">Variável</th><th scope="col">Coeficiente</th></tr></thead>
       <tbody>
         <tr><td>Intercepto</td><td class="num">{{ '%.4f'|format(m.intercepto) }}</td></tr>
@@ -142,7 +150,7 @@ function montarCorrelacoes() {
     tdRho.dataset.valor = c.rho;
     tdRho.textContent = c.rho.toLocaleString('pt-BR',
       { minimumFractionDigits: 3, maximumFractionDigits: 3 });
-    tdRho.style.background = corDoRho(c.rho);
+    pintarCelula(tdRho, corDoRho(c.rho));
 
     const tdP = document.createElement('td');
     tdP.className = 'num';
@@ -216,7 +224,7 @@ function montarDispersao() {
       datasets: [{
         label: nomeCompleto(ky) + ' × ' + nomeCompleto(kx),
         data: pontos.map(p => ({ x: p.x, y: p.y, s: p.s })),
-        backgroundColor: '#2A7D74',
+        backgroundColor: '#43509A',
         pointRadius: 5,
       }],
     },

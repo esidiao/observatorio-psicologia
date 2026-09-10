@@ -91,7 +91,10 @@ INDICADORES = [
        "SUS. Responde à pergunta de onde existe profissional em atividade "
        "capaz de absorver quem se forma. Conta pela família CBO 2515, por "
        "prefixo: casar por texto capturaria professores e pesquisadores de "
-       "Psicologia, que não fazem assistência.",
+       "Psicologia, que não fazem assistência. Leia junto com a densidade: a "
+       "presença é quase universal — 5.523 dos 5.571 municípios —, então este "
+       "índice separa pouco os estados, e é a quantidade de psicólogos por 100 "
+       "mil habitantes que mostra onde a rede é de fato densa.",
        "0 a 1", "maior", "CNES/DATASUS", dec=3, min=0, max=1,
        aliases=["icap", "cobertura", "psicólogos por município"]),
 
@@ -277,7 +280,10 @@ INDICADORES = [
 
     _i("psicologos_por_100k", "Psicólogos / 100 mil hab.",
        "Densidade de psicólogos no SUS", "Cobertura — saúde",
-       "Psicólogos vinculados ao SUS por 100 mil habitantes.",
+       "Psicólogos vinculados ao SUS por 100 mil habitantes. É a medida que "
+       "separa os estados de verdade: quase todo município tem ao menos um "
+       "psicólogo, mas ter um e ter trinta são situações diferentes, e só a "
+       "densidade enxerga a diferença.",
        "profissionais/100 mil", "maior", "CNES/DATASUS + IBGE", dec=1),
 
     _i("municipios_com_raps", "Municípios com atenção psicossocial",
@@ -316,7 +322,11 @@ INDICADORES = [
        "(115/003), regime residencial ou internação para transtornos mentais e "
        "dependência química (115/008, 115/009). Publicado separado da rede "
        "aberta de propósito: a política pública trata os dois como opostos, e "
-       "somá-los mediria coisas contrárias com o mesmo sinal.",
+       "somá-los mediria coisas contrárias com o mesmo sinal. O 115/008 "
+       "chama-se “regime residencial” e entra aqui, não na moradia "
+       "assistida: é o código das comunidades terapêuticas, enquanto a "
+       "residência terapêutica e a unidade de acolhimento existem para desfazer "
+       "a internação, não para prestá-la.",
        "municípios", "contextual", "CNES/DATASUS", dec=0,
        aliases=["internação", "leito", "regime fechado"]),
 

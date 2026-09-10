@@ -123,6 +123,13 @@ SUBGRUPOS = {
     "residencial": ["001", "004", "005", "006", "007"],
     "internacao": ["003", "008", "009"],
 }
+# O 115/008 chama-se UNIDADE DE ATENCAO EM REGIME RESIDENCIAL, e o nome puxa
+# para o grupo "residencial". Ele está em "internacao" de propósito: é o código
+# das comunidades terapêuticas, regime fechado para dependência química. O
+# grupo residencial reúne o oposto disso — residência terapêutica e unidade de
+# acolhimento são moradia na cidade, e existem justamente para desfazer a
+# internação. Agrupar pelo nome, e não pelo que a política pública faz, juntaria
+# o manicômio com o que veio para substituí-lo.
 ROTULOS_SUBGRUPO = {
     "comunitaria": "Atenção psicossocial comunitária (aberta)",
     "residencial": "Moradia assistida e acolhimento",

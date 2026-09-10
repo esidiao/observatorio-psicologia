@@ -303,7 +303,11 @@ tbody td { padding: 9px 14px; border-top: 1px solid var(--border); }
 tbody tr:nth-child(even) { background: var(--zebra); }
 tbody tr:hover { background: var(--realce); }
 td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
-td.celula-cor { color: #1A1D33; font-weight: 600; }
+/* A COR do texto da célula é decidida em JS por `pintarCelula`, que mede
+   a luminância do fundo — uma escala que vai do quase branco ao índigo
+   profundo não tem uma cor de texto que sirva para as duas pontas. Aqui
+   fica só o peso. */
+td.celula-cor { font-weight: 600; }
 td.nao-significativo { color: var(--text-muted); }
 td.parcial { color: var(--warm); }
 

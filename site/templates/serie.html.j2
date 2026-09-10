@@ -28,6 +28,7 @@
   <h2 class="secao-titulo">Brasil</h2>
   <div class="tabela-rolagem">
     <table class="tabela-simples">
+      <caption class="so-leitor">Totais do Brasil por edição do Censo da Educação Superior, e variação entre a primeira e a última</caption>
       <thead>
         <tr>
           <th scope="col">Indicador</th>
@@ -175,7 +176,11 @@ function montar() {
         return {
           label: String(ano),
           data: siglas.map(s => ((SERIE.ufs[s] || {})[ano] || {})[campo] ?? null),
-          backgroundColor: i === 0 ? '#A6D3CC' : '#123F3A',
+          /* Do mais claro ao mais escuro da escala sequencial, na ordem
+             dos anos: o gráfico passa a ler cronologia pela saturação,
+             sem inventar matiz nenhum fora da paleta. */
+          backgroundColor: SEQ[Math.min(SEQ.length - 1,
+                                        2 + Math.round(i * 5 / Math.max(1, ANOS.length - 1)))],
         };
       }),
     },

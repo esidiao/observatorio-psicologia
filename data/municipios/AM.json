@@ -1,0 +1,127 @@
+{
+ "uf": "AM",
+ "municipios": [
+  {
+   "codigo": "1302603",
+   "nome": "Manaus",
+   "uf": "AM",
+   "vagas_presencial": 5836,
+   "cursos_presencial": 18,
+   "n_ies": 13,
+   "matriculas": 5848,
+   "matriculas_ead": 0,
+   "concluintes": 575,
+   "polos_ead": 1,
+   "tem_curso_presencial": true,
+   "psicologos_sus": 456,
+   "estabelecimentos_raps": 119,
+   "servicos_raps": [
+    "115/002",
+    "115/003",
+    "115/004",
+    "115/005"
+   ],
+   "raps_comunitaria": 118,
+   "raps_residencial": 1,
+   "raps_internacao": 3,
+   "cras": 20,
+   "creas": 5
+  },
+  {
+   "codigo": "1301209",
+   "nome": "Coari",
+   "uf": "AM",
+   "vagas_presencial": 200,
+   "cursos_presencial": 1,
+   "n_ies": 1,
+   "matriculas": 84,
+   "matriculas_ead": 0,
+   "concluintes": 0,
+   "polos_ead": 0,
+   "tem_curso_presencial": true,
+   "psicologos_sus": 4,
+   "estabelecimentos_raps": 3,
+   "servicos_raps": [
+    "115/002",
+    "115/003"
+   ],
+   "raps_comunitaria": 3,
+   "raps_residencial": null,
+   "raps_internacao": 1,
+   "cras": 2,
+   "creas": 1
+  },
+  {
+   "codigo": "1301902",
+   "nome": "Itacoatiara",
+   "uf": "AM",
+   "vagas_presencial": 200,
+   "cursos_presencial": 1,
+   "n_ies": 1,
+   "matriculas": 122,
+   "matriculas_ead": 0,
+   "concluintes": 0,
+   "polos_ead": 0,
+   "tem_curso_presencial": true,
+   "psicologos_sus": 19,
+   "estabelecimentos_raps": 7,
+   "servicos_raps": [
+    "115/002",
+    "115/003"
+   ],
+   "raps_comunitaria": 7,
+   "raps_residencial": null,
+   "raps_internacao": 1,
+   "cras": 3,
+   "creas": 1
+  },
+  {
+   "codigo": "1303403",
+   "nome": "Parintins",
+   "uf": "AM",
+   "vagas_presencial": 200,
+   "cursos_presencial": 1,
+   "n_ies": 1,
+   "matriculas": 157,
+   "matriculas_ead": 0,
+   "concluintes": 0,
+   "polos_ead": 0,
+   "tem_curso_presencial": true,
+   "psicologos_sus": 28,
+   "estabelecimentos_raps": 8,
+   "servicos_raps": [
+    "115/002",
+    "115/003"
+   ],
+   "raps_comunitaria": 7,
+   "raps_residencial": null,
+   "raps_internacao": 2,
+   "cras": 4,
+   "creas": 1
+  },
+  {
+   "codigo": "1304203",
+   "nome": "Tefé",
+   "uf": "AM",
+   "vagas_presencial": 200,
+   "cursos_presencial": 1,
+   "n_ies": 1,
+   "matriculas": 192,
+   "matriculas_ead": 0,
+   "concluintes": 0,
+   "polos_ead": 0,
+   "tem_curso_presencial": true,
+   "psicologos_sus": 19,
+   "estabelecimentos_raps": 6,
+   "servicos_raps": [
+    "115/002",
+    "115/003"
+   ],
+   "raps_comunitaria": 6,
+   "raps_residencial": null,
+   "raps_internacao": 1,
+   "cras": 2,
+   "creas": 1
+  }
+ ]
+}

@@ -19,6 +19,19 @@
     o índice foi calculado. Zerar a ausência jogaria os estados não avaliados
     para o fim do ranking como se tivessem sido medidos e tivessem ido mal.
   </div>
+  <div class="aviso">
+    <strong>Cada componente é esticado para caber em 0 a 100.</strong> A
+    normalização é relativa à amplitude observada: o estado de menor valor vai a
+    0 e o de maior vai a 100, seja qual for a distância real entre eles. Isso
+    tem uma consequência que vale conhecer antes de ler o ranking — a cobertura
+    por força de trabalho varia doze pontos entre o primeiro e o último estado,
+    e a cobertura socioassistencial varia oitenta e quatro; depois de
+    normalizadas, as duas ocupam a mesma escala e a diferença menor parece tão
+    grande quanto a maior. Não é erro de cálculo, é o que a normalização faz.
+    Para ver a distância verdadeira, os valores brutos estão na tabela de cada
+    estado e no
+    <a href="{{ depth }}comparar.html">comparador</a>.
+  </div>
 </section>
 
 <section class="secao">
@@ -192,7 +205,7 @@ function montarRanking() {
     } else {
       tdValor.textContent = l.valor.toLocaleString('pt-BR',
         { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-      tdValor.style.background = corSequencial(l.valor, 'IAF');
+      pintarCelula(tdValor, corSequencial(l.valor, 'IAF'));
     }
 
     const tdUsados = document.createElement('td');

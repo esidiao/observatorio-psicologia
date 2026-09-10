@@ -1,0 +1,124 @@
+{
+ "uf": "AL",
+ "municipios": [
+  {
+   "codigo": "2704302",
+   "nome": "Maceió",
+   "uf": "AL",
+   "vagas_presencial": 2297,
+   "cursos_presencial": 7,
+   "n_ies": 7,
+   "matriculas": 3832,
+   "matriculas_ead": 0,
+   "concluintes": 476,
+   "polos_ead": 0,
+   "tem_curso_presencial": true,
+   "psicologos_sus": 690,
+   "estabelecimentos_raps": 50,
+   "servicos_raps": [
+    "115/002",
+    "115/005",
+    "115/010",
+    "115/011"
+   ],
+   "raps_comunitaria": 50,
+   "raps_residencial": 3,
+   "raps_internacao": null,
+   "cras": 19,
+   "creas": 5
+  },
+  {
+   "codigo": "2700300",
+   "nome": "Arapiraca",
+   "uf": "AL",
+   "vagas_presencial": 639,
+   "cursos_presencial": 3,
+   "n_ies": 3,
+   "matriculas": 725,
+   "matriculas_ead": 0,
+   "concluintes": 22,
+   "polos_ead": 0,
+   "tem_curso_presencial": true,
+   "psicologos_sus": 109,
+   "estabelecimentos_raps": 7,
+   "servicos_raps": [
+    "115/002"
+   ],
+   "raps_comunitaria": 7,
+   "raps_residencial": null,
+   "raps_internacao": null,
+   "cras": 9,
+   "creas": 1
+  },
+  {
+   "codigo": "2706307",
+   "nome": "Palmeira dos Índios",
+   "uf": "AL",
+   "vagas_presencial": 61,
+   "cursos_presencial": 1,
+   "n_ies": 1,
+   "matriculas": 323,
+   "matriculas_ead": 0,
+   "concluintes": 64,
+   "polos_ead": 0,
+   "tem_curso_presencial": true,
+   "psicologos_sus": 44,
+   "estabelecimentos_raps": 9,
+   "servicos_raps": [
+    "115/002",
+    "115/003"
+   ],
+   "raps_comunitaria": 8,
+   "raps_residencial": null,
+   "raps_internacao": 1,
+   "cras": 1,
+   "creas": 1
+  },
+  {
+   "codigo": "2706703",
+   "nome": "Penedo",
+   "uf": "AL",
+   "vagas_presencial": 55,
+   "cursos_presencial": 1,
+   "n_ies": 1,
+   "matriculas": 66,
+   "matriculas_ead": 0,
+   "concluintes": 0,
+   "polos_ead": 0,
+   "tem_curso_presencial": true,
+   "psicologos_sus": 31,
+   "estabelecimentos_raps": 5,
+   "servicos_raps": [
+    "115/002"
+   ],
+   "raps_comunitaria": 5,
+   "raps_residencial": null,
+   "raps_internacao": null,
+   "cras": 2,
+   "creas": 1
+  },
+  {
+   "codigo": "2702405",
+   "nome": "Delmiro Gouveia",
+   "uf": "AL",
+   "vagas_presencial": 0,
+   "cursos_presencial": 0,
+   "n_ies": 0,
+   "matriculas": 1,
+   "matriculas_ead": 1,
+   "concluintes": 1,
+   "polos_ead": 1,
+   "tem_curso_presencial": false,
+   "psicologos_sus": 39,
+   "estabelecimentos_raps": 3,
+   "servicos_raps": [
+    "115/002"
+   ],
+   "raps_comunitaria": 3,
+   "raps_residencial": null,
+   "raps_internacao": null,
+   "cras": 1,
+   "creas": 1
+  }
+ ]
+}

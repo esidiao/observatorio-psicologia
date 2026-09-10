@@ -84,7 +84,13 @@ const NOMES_UF = {{ nomes_uf | json }};
 const DEPTH = {{ depth | tojson }};
 
 const PADRAO = ['vagas_total', 'ICT', 'IAF', 'CPC', 'ICAP', 'ICRP', 'ICAS'];
-const COMPARAVEIS = GLOSSARIO.map(g => g.key);
+/* Só o que existe por ESTADO. O catálogo inclui indicadores exclusivos das
+   páginas municipais, e oferecê-los aqui produziria colunas sempre vazias — e
+   chips duplicados, já que `cras` (município) e `cras_total` (estado) têm a
+   mesma sigla na tela. A lista vem do conjunto publicado, não escrita à mão. */
+const CAMPOS_UF = {{ campos_uf_json }};
+const COMPARAVEIS = GLOSSARIO.filter(g => CAMPOS_UF.indexOf(g.key) !== -1)
+                             .map(g => g.key);
 
 const siglas = Object.keys(UFS).sort();
 let indicadoresSel = PADRAO.slice();
@@ -110,7 +116,8 @@ function montarEscolhas() {
   const alvoInd = document.getElementById('escolha-indicadores');
   alvoInd.innerHTML = '';
   CATEGORIAS.forEach(function (cat) {
-    const doGrupo = GLOSSARIO.filter(g => g.cat === cat);
+    const doGrupo = GLOSSARIO.filter(
+      g => g.cat === cat && COMPARAVEIS.indexOf(g.key) !== -1);
     if (!doGrupo.length) return;
     const titulo = document.createElement('span');
     titulo.className = 'chips-titulo';
@@ -256,7 +263,12 @@ function normalizarParaRadar(chave, estados) {
   });
 }
 
-const CORES_SERIE = ['#123F3A', '#C0562F', '#2A7D74', '#7A6A9B', '#8A9A2E',
+/* Séries múltiplas num gráfico só: aqui matizes DIFERENTES são
+   necessários — a escala sequencial serve para ordenar, não para
+   distinguir categorias. Os dois primeiros são os institucionais; os
+   demais foram escolhidos para permanecerem distinguíveis na deuteranopia,
+   que é o daltonismo mais comum. */
+const CORES_SERIE = [cor('deep'), cor('warm'), cor('mid'), '#7A6A9B', '#8A9A2E',
                      '#B2182B', '#2166AC', '#6B7280'];
 
 function montarRadar() {

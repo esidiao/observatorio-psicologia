@@ -191,12 +191,20 @@
     <label class="campo">
       Indicador
       <select id="seletor-mapa">
+        {# Só indicadores que existem por ESTADO. O catálogo cobre também os
+           exclusivos das páginas municipais, e oferecê-los aqui pintaria o
+           mapa inteiro de cinza — um mapa "sem dados" que na verdade é uma
+           pergunta feita no nível errado. #}
         {% for cat in categorias %}
+        {% set do_grupo = catalogo | selectattr('cat', 'equalto', cat)
+                                   | selectattr('key', 'in', campos_uf) | list %}
+        {% if do_grupo %}
         <optgroup label="{{ cat }}">
-          {% for ind in catalogo if ind.cat == cat %}
+          {% for ind in do_grupo %}
           <option value="{{ ind.key }}"{% if ind.key == 'ICT' %} selected{% endif %}>{{ ind.nome }}</option>
           {% endfor %}
         </optgroup>
+        {% endif %}
         {% endfor %}
       </select>
     </label>
