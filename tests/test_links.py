@@ -48,21 +48,34 @@ def _paginas():
     return sorted(DIST.rglob("*.html")) if DIST.exists() else []
 
 
+# Listagem por diretório, lida uma vez. Sem o cache, cada link relistava a
+# pasta inteira: no observatório de Educação Superior, com 10.121 páginas em
+# poucos diretórios, isso virou varredura quadrática e queimou 400 s de CPU sem
+# terminar. O teste que demora é o teste que alguém tira do CI.
+_LISTAGENS: dict = {}
+
+
 def _existe(caminho: Path) -> bool:
     """
     Existência sensível à caixa, mesmo em sistema de arquivos que não é.
 
     `Path.exists()` no Windows diz que `GOIANIA.html` e `goiania.html` são o
     mesmo arquivo. No Linux do GitHub Pages, não são — e é lá que o leitor
-    recebe o 404.
+    recebe o 404. Comparar o nome contra a listagem real do diretório resolve
+    as duas coisas de uma vez: confere existência e confere caixa.
     """
-    if not caminho.exists():
-        return False
-    try:
-        atual = caminho.resolve()
-        return atual.name in {p.name for p in atual.parent.iterdir()}
-    except OSError:
-        return False
+    pasta = caminho.parent
+    nomes = _LISTAGENS.get(pasta)
+    if nomes is None:
+        try:
+            nomes = {item.name for item in pasta.iterdir()}
+        except OSError:
+            nomes = set()
+        _LISTAGENS[pasta] = nomes
+    return caminho.name in nomes
+
+
+_REFERENCIAS = None
 
 
 def _referencias():
@@ -75,8 +88,17 @@ def _referencias():
     tratamento oposto: `{{ ... }}` que sobrou no HTML é Jinja que NÃO renderizou,
     e isso é defeito de verdade — segue como referência quebrada.
     """
+    global _REFERENCIAS
+    if _REFERENCIAS is not None:
+        return _REFERENCIAS
+
+    # Lista, não gerador: os dois testes percorrem as mesmas referências, e o
+    # site do observatório de Educação Superior tem 323 MB em 10.121 páginas —
+    # lê-las duas vezes dobrava um custo que já é o dominante.
+    _REFERENCIAS = []
     for pagina in _paginas():
         html = pagina.read_text(encoding="utf-8", errors="replace")
+        relativa = pagina.relative_to(DIST).as_posix()
         for alvo in PADRAO.findall(html):
             alvo = alvo.strip()
             if not alvo or alvo.startswith(EXTERNOS) or "${" in alvo:
@@ -86,7 +108,8 @@ def _referencias():
                 continue
             destino = (DIST / caminho.lstrip("/") if caminho.startswith("/")
                        else pagina.parent / caminho)
-            yield pagina.relative_to(DIST).as_posix(), alvo, destino
+            _REFERENCIAS.append((relativa, alvo, destino))
+    return _REFERENCIAS
 
 
 def test_todo_link_interno_aponta_para_arquivo_existente():
@@ -121,7 +144,7 @@ def test_nenhum_arquivo_baixavel_fica_orfao():
         return
 
     alcancados = {destino.resolve() for _p, _a, destino in _referencias()
-                  if destino.exists()}
+                  if _existe(destino)}
     orfaos = []
     for arquivo in sorted(DIST.rglob("*")):
         if arquivo.is_file() and arquivo.suffix.lower() in BAIXAVEIS:
