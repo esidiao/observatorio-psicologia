@@ -65,11 +65,13 @@ SUBGRUPOS_RAPS = ("comunitaria", "residencial", "internacao")
 # "sem dados" — some da página inteira, sem alarme nenhum.
 CAMPOS_CNES_UF = (
     ["municipios_com_psicologo", "municipios_com_raps",
-     "psicologos_sus", "psicologos_por_100k", "estabelecimentos_raps"]
+     "psicologos_sus", "psicologos_por_100k", "estabelecimentos_raps",
+     "municipios_com_raps_total", "estabelecimentos_raps_total"]
     + [f"municipios_com_raps_{g}" for g in SUBGRUPOS_RAPS]
 )
 CAMPOS_CNES_MUNICIPIO = (
-    ["psicologos_sus", "estabelecimentos_raps", "servicos_raps"]
+    ["psicologos_sus", "estabelecimentos_raps", "estabelecimentos_raps_total",
+     "servicos_raps"]
     + [f"raps_{g}" for g in SUBGRUPOS_RAPS]
 )
 CAMPOS_SUAS_UF = ["municipios_com_cras", "municipios_com_creas",
@@ -130,6 +132,8 @@ def juntar_cobertura(ufs, municipios_por_uf, cobertura):
 
     com_psicologo = defaultdict(int)
     com_raps = defaultdict(int)
+    com_raps_total = defaultdict(int)
+    estabelecimentos_total = defaultdict(int)
     com_raps_grupo = {g: defaultdict(int) for g in SUBGRUPOS_RAPS}
     profissionais = defaultdict(int)
     estabelecimentos = defaultdict(int)
@@ -144,6 +148,9 @@ def juntar_cobertura(ufs, municipios_por_uf, cobertura):
         if m.get("estabelecimentos_raps"):
             com_raps[uf] += 1
             estabelecimentos[uf] += m["estabelecimentos_raps"]
+        if m.get("estabelecimentos_raps_total"):
+            com_raps_total[uf] += 1
+            estabelecimentos_total[uf] += m["estabelecimentos_raps_total"]
         for grupo in SUBGRUPOS_RAPS:
             if m.get(f"raps_{grupo}"):
                 com_raps_grupo[grupo][uf] += 1
@@ -157,6 +164,8 @@ def juntar_cobertura(ufs, municipios_por_uf, cobertura):
             d[f"municipios_com_raps_{grupo}"] = com_raps_grupo[grupo].get(sigla, 0)
         d["psicologos_sus"] = profissionais.get(sigla, 0)
         d["estabelecimentos_raps"] = estabelecimentos.get(sigla, 0)
+        d["municipios_com_raps_total"] = com_raps_total.get(sigla, 0)
+        d["estabelecimentos_raps_total"] = estabelecimentos_total.get(sigla, 0)
         d["psicologos_por_100k"] = por_100k(profissionais.get(sigla, 0),
                                             d.get("populacao"))
 
@@ -165,6 +174,8 @@ def juntar_cobertura(ufs, municipios_por_uf, cobertura):
             cnes = por_municipio.get(str(m["codigo"])[:6], {})
             m["psicologos_sus"] = cnes.get("psicologos_sus")
             m["estabelecimentos_raps"] = cnes.get("estabelecimentos_raps")
+            m["estabelecimentos_raps_total"] = cnes.get(
+                "estabelecimentos_raps_total")
             m["servicos_raps"] = cnes.get("servicos")
             for grupo in SUBGRUPOS_RAPS:
                 m[f"raps_{grupo}"] = cnes.get(f"raps_{grupo}")
@@ -269,6 +280,18 @@ def limitacoes(ufs, qualidade, cobertura, suas):
                      "qualidade estão nulos.")
 
     if cobertura:
+        itens.append(
+            "Os indicadores da rede psicossocial contam apenas estabelecimentos "
+            "que ofertam o serviço AO SUS. O total declarado — que inclui a "
+            "clínica privada registrada no cadastro — é publicado ao lado, nos "
+            "campos terminados em `_total`: a RAPS é política pública, e "
+            "serviço declarado no cadastro não é serviço público.")
+        itens.append(
+            "A coluna ST_ATIVO_SN de rlEstabServClass vem vazia em todas as "
+            "linhas deste export do CNES, então não há como excluir serviço "
+            "marcado como inativo. O filtro que existia no extrator lia coluna "
+            "sempre em branco e nunca excluiu nada; a limitação passou a ser "
+            "declarada em vez de disfarçada de filtro.")
         itens.append(
             "A rede psicossocial (serviço 115 do CNES, ATENÇÃO PSICOSSOCIAL) é "
             "publicada em três subgrupos — comunitário, moradia assistida e "

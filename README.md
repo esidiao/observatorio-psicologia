@@ -31,8 +31,9 @@ Fontes de cobertura assistencial, medidas no CNES 202607 e no CadSUAS 202608:
 |---|---|
 | Municípios com psicólogo no SUS | 5.523 de 5.571 |
 | Psicólogos vinculados ao SUS | 71.542 profissionais distintos |
-| Municípios com atenção psicossocial | 3.797 |
-| Estabelecimentos com serviço 115 | 22.481 |
+| Municípios com atenção psicossocial **ofertada ao SUS** | 3.733 |
+| Estabelecimentos com serviço 115 **ao SUS** | 12.607 |
+| Os mesmos, declarados (SUS ou privado) | 3.797 · 22.481 |
 | Municípios com CRAS · CREAS | 5.559 · 2.758 |
 | Unidades de CRAS · CREAS | 8.977 · 3.039 |
 
@@ -110,7 +111,17 @@ Para Psicologia, "onde existe rede pública que absorve quem se forma?" tem **tr
 respostas, e nenhuma fonte única as dá:
 
 * **ICAP — força de trabalho.** Municípios com ao menos um vínculo de psicólogo no SUS.
-* **ICRP — rede psicossocial.** Municípios com estabelecimento que declara o serviço 115.
+* **ICRP — rede psicossocial.** Municípios com estabelecimento que oferta **ao SUS** o
+  serviço 115. A RAPS é política pública, e estabelecimento privado que declara o
+  mesmo serviço no cadastro não faz parte dela: medido, sem esse filtro a contagem
+  sobe de 12.607 para 22.481 estabelecimentos — 44% do que seria publicado como
+  rede pública não atende pelo SUS. O total declarado sai ao lado, nos campos
+  terminados em `_total`.
+
+  Na mesma tabela do CNES, a coluna `ST_ATIVO_SN` vem **vazia em todas as linhas**
+  deste export. O filtro de serviço inativo que existia no extrator lia coluna
+  sempre em branco e nunca excluiu nada — agora a ausência é contada e declarada,
+  em vez de disfarçada de filtro.
 * **ICAS — socioassistencial.** Municípios com ao menos um CREAS.
 
 Fundir os três exigiria decidir quanto vale "tem psicólogo" contra "tem CAPS" contra "tem

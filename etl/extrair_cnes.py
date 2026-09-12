@@ -333,9 +333,12 @@ def baixar_fatias(competencia, cache, rebaixar=False):
                 linhas.append([_limpo(linha.get("CO_UNIDADE")),
                                _limpo(linha.get("CO_SERVICO")),
                                _limpo(linha.get("CO_CLASSIFICACAO")),
-                               _limpo(linha.get("ST_ATIVO_SN"))])
+                               _limpo(linha.get("ST_ATIVO_SN")),
+                               _limpo(linha.get("CO_AMBULATORIAL_SUS")),
+                               _limpo(linha.get("CO_HOSPITALAR_SUS"))])
         _escrever(alvos["servicos"],
-                  ["CO_UNIDADE", "CO_SERVICO", "CO_CLASSIFICACAO", "ST_ATIVO_SN"],
+                  ["CO_UNIDADE", "CO_SERVICO", "CO_CLASSIFICACAO", "ST_ATIVO_SN",
+                   "CO_AMBULATORIAL_SUS", "CO_HOSPITALAR_SUS"],
                   linhas)
         print(f"[CNES] {total} registros de serviço; {len(linhas)} do serviço "
               f"{SERVICO_PSICOSSOCIAL} -> {alvos['servicos'].name}")
@@ -427,26 +430,33 @@ def rede_psicossocial(caminho, ativos, conhecidos):
     contaria duas vezes.
     """
     total_por_municipio = defaultdict(set)
+    declarado_por_municipio = defaultdict(set)
     por_grupo = {g: defaultdict(set) for g in SUBGRUPOS}
     detalhe = defaultdict(lambda: defaultdict(set))
     contadores = defaultdict(int)
     nao_agrupadas = defaultdict(int)
-    total = inativos = 0
+    total = com_situacao = 0
 
     with open(caminho, encoding="utf-8") as f:
         for linha in csv.DictReader(f, delimiter=";"):
             total += 1
-            if linha["ST_ATIVO_SN"].upper() == "N":
-                inativos += 1
-                continue
+            if linha.get("ST_ATIVO_SN"):
+                com_situacao += 1
             municipio = _classificar(linha["CO_UNIDADE"], ativos, conhecidos,
                                      contadores)
             if not municipio:
                 continue
             classificacao = linha["CO_CLASSIFICACAO"]
             unidade = linha["CO_UNIDADE"]
-            total_por_municipio[municipio].add(unidade)
+            declarado_por_municipio[municipio].add(unidade)
             detalhe[municipio][f"{linha['CO_SERVICO']}/{classificacao}"].add(unidade)
+            # Só o que é ofertado AO SUS entra nos indicadores: a rede de
+            # atenção psicossocial é política pública, e clínica privada que
+            # declara o serviço 115 no cadastro não faz parte dela.
+            if not (linha.get("CO_AMBULATORIAL_SUS") == "1"
+                    or linha.get("CO_HOSPITALAR_SUS") == "1"):
+                continue
+            total_por_municipio[municipio].add(unidade)
             grupo = GRUPO_POR_CLASSIFICACAO.get(classificacao)
             if grupo:
                 por_grupo[grupo][municipio].add(unidade)
@@ -459,9 +469,10 @@ def rede_psicossocial(caminho, ativos, conhecidos):
               f"{dict(nao_agrupadas)}. Entram no total e em nenhum subgrupo — "
               "decida onde encaixá-las em SUBGRUPOS.")
 
-    return total_por_municipio, por_grupo, detalhe, {
+    return total_por_municipio, declarado_por_municipio, por_grupo, detalhe, {
         "servicos_psicossociais": total,
-        "servicos_marcados_inativos": inativos,
+        "servicos_com_situacao_preenchida": com_situacao,
+        "st_ativo_sn_vazio_no_export": com_situacao == 0,
         "servicos_em_estabelecimento_desabilitado": contadores["desabilitado"],
         "servicos_sem_cadastro": contadores["sem_cadastro"],
         "classificacoes_nao_agrupadas": dict(nao_agrupadas),
@@ -503,16 +514,22 @@ def conferir_juncao(casos, limite=LIMITE_SEM_CADASTRO):
                          + "\n  - ".join(problemas))
 
 
-def montar(competencia, sus, todos, rede, por_grupo, detalhe, dominio, diagnostico):
+def montar(competencia, sus, todos, rede, rede_declarada, por_grupo, detalhe,
+           dominio, diagnostico):
     municipios = {}
-    chaves = set(sus) | set(todos) | set(rede)
+    chaves = set(sus) | set(todos) | set(rede_declarada)
     for grupo in por_grupo.values():
         chaves |= set(grupo)
     for codigo in chaves:
         registro = {
             "psicologos_sus": len(sus.get(codigo, ())) or None,
             "psicologos_total": len(todos.get(codigo, ())) or None,
+            # O indicador conta o que atende pelo SUS; o total declarado
+            # (público mais privado) sai ao lado, e a distância entre os dois
+            # diz quanto da rede psicossocial do município é pública.
             "estabelecimentos_raps": len(rede.get(codigo, ())) or None,
+            "estabelecimentos_raps_total": len(
+                rede_declarada.get(codigo, ())) or None,
             "servicos": sorted(detalhe.get(codigo, {})) or None,
         }
         for grupo in SUBGRUPOS:
@@ -550,6 +567,20 @@ def montar(competencia, sus, todos, rede, por_grupo, detalhe, dominio, diagnosti
             "servico_nome": (dominio or {}).get("servico"),
             "dominio_nao_lido": (dominio or {}).get("falhas") or None,
             "subgrupos": subgrupos_declarados,
+            "servico_criterio_sus": (
+                "Os indicadores contam estabelecimentos que ofertam o serviço "
+                "AO SUS (CO_AMBULATORIAL_SUS ou CO_HOSPITALAR_SUS = 1). O "
+                "total declarado, que inclui o privado, sai em "
+                "`estabelecimentos_raps_total`: serviço declarado no cadastro "
+                "não é serviço público, e a RAPS é política pública."
+            ),
+            "st_ativo_sn_nao_filtra": (
+                "A coluna ST_ATIVO_SN de rlEstabServClass vem vazia em todas as "
+                "linhas deste export, então não há como excluir serviço "
+                "marcado como inativo. O filtro que existia aqui lia coluna "
+                "sempre em branco e nunca excluiu nada; agora a ausência é "
+                "contada e declarada."
+            ),
             "subgrupos_nao_somam_o_total": (
                 "O total conta estabelecimentos distintos com qualquer "
                 "classificação do serviço 115. Como um mesmo estabelecimento "
@@ -606,7 +637,7 @@ def main():
 
     dominio = json.loads(fatias["dominio"].read_text(encoding="utf-8"))
     sus, todos, diag_ch = forca_de_trabalho(fatias["vinculos"], ativos, conhecidos)
-    rede, por_grupo, detalhe, diag_sc = rede_psicossocial(
+    rede, rede_declarada, por_grupo, detalhe, diag_sc = rede_psicossocial(
         fatias["servicos"], ativos, conhecidos)
 
     conferir_juncao([
@@ -620,8 +651,8 @@ def main():
          diag_sc["servicos_em_estabelecimento_desabilitado"]),
     ])
 
-    saida = montar(competencia, sus, todos, rede, por_grupo, detalhe, dominio,
-                   {**diag_ch, **diag_sc})
+    saida = montar(competencia, sus, todos, rede, rede_declarada, por_grupo,
+                   detalhe, dominio, {**diag_ch, **diag_sc})
     Path(args.saida).parent.mkdir(parents=True, exist_ok=True)
     Path(args.saida).write_text(
         json.dumps(saida, ensure_ascii=False, indent=1), encoding="utf-8")
@@ -629,8 +660,11 @@ def main():
     n_forca = sum(1 for m in saida["municipios"].values() if m["psicologos_sus"])
     n_rede = sum(1 for m in saida["municipios"].values()
                  if m["estabelecimentos_raps"])
+    n_rede_total = sum(1 for m in saida["municipios"].values()
+                       if m["estabelecimentos_raps_total"])
     print(f"\n[CNES] municípios com psicólogo no SUS: {n_forca}")
-    print(f"[CNES] municípios com serviço de atenção psicossocial: {n_rede}")
+    print(f"[CNES] municípios com serviço de atenção psicossocial ao SUS: "
+          f"{n_rede} (declarado por qualquer natureza: {n_rede_total})")
     for grupo in SUBGRUPOS:
         n = sum(1 for m in saida["municipios"].values() if m[f"raps_{grupo}"])
         print(f"[CNES]   {ROTULOS_SUBGRUPO[grupo]}: {n} municípios")

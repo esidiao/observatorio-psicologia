@@ -14,14 +14,15 @@
    "polos_ead": 0,
    "tem_curso_presencial": true,
    "psicologos_sus": 160,
-   "estabelecimentos_raps": 53,
+   "estabelecimentos_raps": 18,
+   "estabelecimentos_raps_total": 53,
    "servicos_raps": [
     "115/002",
     "115/003",
     "115/006",
     "115/010"
    ],
-   "raps_comunitaria": 53,
+   "raps_comunitaria": 18,
    "raps_residencial": 1,
    "raps_internacao": 3,
    "cras": 8,
