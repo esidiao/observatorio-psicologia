@@ -100,6 +100,13 @@ jobs:
       - name: "Gerar site"
         run: python site/build.py
 
+      # Depois do build, e não antes: o teste lê o HTML gerado. Confere que
+      # todo link e todo recurso interno existe no que vai ao ar — um 404 não
+      # reprova build nenhum, e foi assim que o link da planilha ficou
+      # apontando para o nome de outro projeto sem nada acusar.
+      - name: "Links internos e recursos referenciados"
+        run: python tests/test_links.py
+
       - name: "Conferir o que foi gerado"
         run: |
           echo "UFs:        $(ls site/dist/uf/*.html | wc -l)"
