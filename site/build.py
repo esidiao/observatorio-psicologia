@@ -422,6 +422,8 @@ def construir(caminho_dados, saida, templates):
         # afirmaria "nenhum município do país tem psicólogo no SUS".
         "municipios_com_psicologo": _soma_ou_nulo(ufs, "municipios_com_psicologo"),
         "municipios_com_raps": _soma_ou_nulo(ufs, "municipios_com_raps"),
+        "municipios_com_raps_total": _soma_ou_nulo(
+            ufs, "municipios_com_raps_total"),
         "municipios_com_creas": _soma_ou_nulo(ufs, "municipios_com_creas"),
         "municipios_com_cras": _soma_ou_nulo(ufs, "municipios_com_cras"),
         "psicologos_sus": _soma_ou_nulo(ufs, "psicologos_sus"),

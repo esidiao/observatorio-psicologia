@@ -99,10 +99,12 @@ INDICADORES = [
        aliases=["icap", "cobertura", "psicólogos por município"]),
 
     _i("ICRP", "ICRP", "Cobertura da Rede Psicossocial", "Cobertura — saúde",
-       "Fração dos municípios do estado com estabelecimento que declara "
+       "Fração dos municípios do estado com estabelecimento que oferta AO SUS "
        "atenção psicossocial no CNES (serviço 115, em qualquer das onze "
        "classificações). É a rede pública de saúde mental — CAPS, residências "
-       "terapêuticas, unidades de acolhimento e leitos.",
+       "terapêuticas, unidades de acolhimento e leitos —, e por isso só o que "
+       "atende pelo SUS entra: clínica privada que declara o mesmo serviço "
+       "aparece no total declarado, à parte.",
        "0 a 1", "maior", "CNES/DATASUS", dec=3, min=0, max=1,
        aliases=["icrp", "rede psicossocial", "raps", "caps", "saúde mental"]),
 
@@ -287,17 +289,32 @@ INDICADORES = [
        "profissionais/100 mil", "maior", "CNES/DATASUS + IBGE", dec=1),
 
     _i("municipios_com_raps", "Municípios com atenção psicossocial",
-       "Municípios com serviço de atenção psicossocial", "Cobertura — saúde",
-       "Municípios com estabelecimento que declara o serviço 115 no CNES, em "
-       "qualquer das onze classificações.",
+       "Municípios com atenção psicossocial no SUS", "Cobertura — saúde",
+       "Municípios com estabelecimento que oferta ao SUS o serviço 115 no "
+       "CNES, em qualquer das onze classificações.",
        "municípios", "maior", "CNES/DATASUS", dec=0, aliases=["raps"]),
 
+    _i("municipios_com_raps_total", "Municípios — serviço declarado",
+       "Municípios com atenção psicossocial declarada (SUS ou privado)",
+       "Cobertura — saúde",
+       "O mesmo serviço 115, sem o filtro de atendimento ao SUS: inclui o "
+       "estabelecimento privado que o declara no cadastro. Publicado ao lado "
+       "do indicador público porque a distância entre os dois diz quanto da "
+       "rede psicossocial do município é acessível pelo SUS.",
+       "municípios", "contextual", "CNES/DATASUS", dec=0),
+
     _i("estabelecimentos_raps", "Estabelecimentos psicossociais",
-       "Estabelecimentos com atenção psicossocial", "Cobertura — saúde",
-       "Estabelecimentos distintos que declaram o serviço 115. Um mesmo "
+       "Estabelecimentos com atenção psicossocial no SUS", "Cobertura — saúde",
+       "Estabelecimentos distintos que ofertam ao SUS o serviço 115. Um mesmo "
        "estabelecimento pode declarar várias classificações e é contado uma "
        "vez.",
        "estabelecimentos", "maior", "CNES/DATASUS", dec=0),
+
+    _i("estabelecimentos_raps_total", "Estabelecimentos — declarado",
+       "Estabelecimentos com atenção psicossocial declarada (SUS ou privado)",
+       "Cobertura — saúde",
+       "Os mesmos estabelecimentos, sem o filtro de atendimento ao SUS.",
+       "estabelecimentos", "contextual", "CNES/DATASUS", dec=0),
 
     _i("municipios_com_raps_comunitaria", "Municípios — rede aberta",
        "Municípios com atenção psicossocial comunitária", "Cobertura — saúde",

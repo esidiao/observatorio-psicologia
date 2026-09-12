@@ -14,14 +14,15 @@
    "polos_ead": 1,
    "tem_curso_presencial": true,
    "psicologos_sus": 255,
-   "estabelecimentos_raps": 34,
+   "estabelecimentos_raps": 23,
+   "estabelecimentos_raps_total": 34,
    "servicos_raps": [
     "115/002",
     "115/003",
     "115/004",
     "115/006"
    ],
-   "raps_comunitaria": 33,
+   "raps_comunitaria": 22,
    "raps_residencial": 3,
    "raps_internacao": 1,
    "cras": 11,
@@ -40,7 +41,8 @@
    "polos_ead": 0,
    "tem_curso_presencial": true,
    "psicologos_sus": 511,
-   "estabelecimentos_raps": 47,
+   "estabelecimentos_raps": 35,
+   "estabelecimentos_raps_total": 47,
    "servicos_raps": [
     "115/002",
     "115/003",
@@ -48,7 +50,7 @@
     "115/007",
     "115/010"
    ],
-   "raps_comunitaria": 45,
+   "raps_comunitaria": 33,
    "raps_residencial": 3,
    "raps_internacao": 3,
    "cras": 13,
@@ -68,6 +70,7 @@
    "tem_curso_presencial": true,
    "psicologos_sus": 47,
    "estabelecimentos_raps": 4,
+   "estabelecimentos_raps_total": 4,
    "servicos_raps": [
     "115/002",
     "115/011"
@@ -91,12 +94,13 @@
    "polos_ead": 0,
    "tem_curso_presencial": true,
    "psicologos_sus": 34,
-   "estabelecimentos_raps": 6,
+   "estabelecimentos_raps": 5,
+   "estabelecimentos_raps_total": 6,
    "servicos_raps": [
     "115/002",
     "115/004"
    ],
-   "raps_comunitaria": 6,
+   "raps_comunitaria": 5,
    "raps_residencial": 1,
    "raps_internacao": null,
    "cras": 3,
@@ -115,12 +119,13 @@
    "polos_ead": 0,
    "tem_curso_presencial": true,
    "psicologos_sus": 76,
-   "estabelecimentos_raps": 11,
+   "estabelecimentos_raps": 10,
+   "estabelecimentos_raps_total": 11,
    "servicos_raps": [
     "115/002",
     "115/003"
    ],
-   "raps_comunitaria": 10,
+   "raps_comunitaria": 9,
    "raps_residencial": null,
    "raps_internacao": 2,
    "cras": 4,
@@ -140,6 +145,7 @@
    "tem_curso_presencial": true,
    "psicologos_sus": 19,
    "estabelecimentos_raps": 4,
+   "estabelecimentos_raps_total": 4,
    "servicos_raps": [
     "115/002",
     "115/003"
@@ -164,6 +170,7 @@
    "tem_curso_presencial": true,
    "psicologos_sus": 30,
    "estabelecimentos_raps": 4,
+   "estabelecimentos_raps_total": 4,
    "servicos_raps": [
     "115/002",
     "115/003"
@@ -188,6 +195,7 @@
    "tem_curso_presencial": true,
    "psicologos_sus": 4,
    "estabelecimentos_raps": 2,
+   "estabelecimentos_raps_total": 2,
    "servicos_raps": [
     "115/002",
     "115/003"

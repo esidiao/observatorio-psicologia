@@ -41,6 +41,7 @@
   <h2 class="secao-titulo">Cobertura assistencial — saúde</h2>
   <div class="kpis kpis-compacto" data-cartoes>
     {% for campo in ['psicologos_sus', 'estabelecimentos_raps',
+                     'estabelecimentos_raps_total',
                      'raps_comunitaria', 'raps_residencial', 'raps_internacao'] %}
     <div class="kpi" data-campo="{{ campo }}"
          data-valor="{{ m[campo] if m[campo] is not none else '' }}"></div>

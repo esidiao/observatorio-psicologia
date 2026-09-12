@@ -50,6 +50,16 @@ CONCLUINTES_PARTICIPANTES = 39135
 # -------------------------------------------------------- âncoras: CadSUAS
 CRAS_TOTAL = 8977
 CREAS_TOTAL = 3039
+# --------------------------------------------------- âncoras: CNES 202607
+# A rede psicossocial nunca teve âncora neste projeto — só o CadSUAS tinha. Foi
+# por isso que a contagem seguiu incluindo estabelecimento privado até ser
+# corrigida, e a mudança de 3.797 para 3.733 municípios não acusaria nada.
+MUNICIPIOS_COM_PSICOLOGO = 5523
+MUNICIPIOS_COM_RAPS = 3733
+MUNICIPIOS_COM_RAPS_TOTAL = 3797
+ESTABELECIMENTOS_RAPS = 12607
+ESTABELECIMENTOS_RAPS_TOTAL = 22481
+
 MUNICIPIOS_COM_CRAS = 5559
 MUNICIPIOS_COM_CREAS = 2758
 
@@ -264,6 +274,66 @@ def test_tres_coberturas_existem_e_sao_separadas():
         fora = [(u, d[indice]) for u, d in ufs.items()
                 if not 0 <= d[indice] <= 1]
         assert not fora, f"{indice} fora de 0..1: {fora}"
+
+
+def test_ancoras_da_rede_psicossocial():
+    """
+    Totais conhecidos do CNES 202607, como teste de regressão.
+
+    Publicar cobertura sem âncora é publicar um número que pode mudar sozinho:
+    a contagem da RAPS incluía estabelecimento privado, e nada nesta bateria
+    teria acusado a diferença.
+    """
+    ufs = _ler("nacional.json")["ufs"]
+    for campo, esperado in [
+        ("municipios_com_psicologo", MUNICIPIOS_COM_PSICOLOGO),
+        ("municipios_com_raps", MUNICIPIOS_COM_RAPS),
+        ("municipios_com_raps_total", MUNICIPIOS_COM_RAPS_TOTAL),
+        ("estabelecimentos_raps", ESTABELECIMENTOS_RAPS),
+        ("estabelecimentos_raps_total", ESTABELECIMENTOS_RAPS_TOTAL),
+    ]:
+        obtido = _soma(ufs, campo)
+        assert obtido == esperado, (
+            f"{campo}: esperado {esperado}, veio {obtido}")
+
+
+def test_rede_psicossocial_publica_e_menor_que_a_declarada():
+    """
+    O filtro de SUS precisa continuar existindo.
+
+    A RAPS é política pública, e estabelecimento privado que declara o serviço
+    115 no cadastro não faz parte dela. Medido: sem o filtro, a contagem sobe de
+    12.607 para 22.481 estabelecimentos — 44% do que seria publicado como rede
+    pública não atende pelo SUS. Se os dois números empatarem, o filtro caiu.
+    """
+    ufs = _ler("nacional.json")["ufs"]
+    assert _soma(ufs, "estabelecimentos_raps") < _soma(
+        ufs, "estabelecimentos_raps_total"), (
+        "estabelecimentos da RAPS ao SUS igualaram o total declarado — o "
+        "filtro CO_AMBULATORIAL_SUS/CO_HOSPITALAR_SUS caiu")
+    assert _soma(ufs, "municipios_com_raps") < _soma(
+        ufs, "municipios_com_raps_total")
+
+
+def test_st_ativo_sn_nao_passa_por_filtro():
+    """
+    A coluna vem vazia no export, e isso precisa continuar declarado.
+
+    O extrator tinha um filtro que lia ST_ATIVO_SN e excluía o que estivesse
+    marcado como inativo. Medido: a coluna está em branco em 100% das linhas —
+    nunca excluiu nada, em execução nenhuma. Se uma competência futura passar a
+    preencher a coluna, este teste falha e a decisão volta a ser possível.
+    """
+    diag = (_ler("_proveniencia.json")["fontes"]["cnes"].get("diagnostico")
+            or {})
+    assert diag.get("st_ativo_sn_vazio_no_export") is True, (
+        "ST_ATIVO_SN deixou de vir vazia: "
+        f"{diag.get('servicos_com_situacao_preenchida')} linhas com situação "
+        "preenchida. Vale reavaliar se o filtro de serviço inativo deve voltar.")
+
+    texto = " ".join(_ler("_proveniencia.json")["limitacoes_conhecidas"]).lower()
+    assert "st_ativo_sn" in texto, (
+        "a limitação do ST_ATIVO_SN não está declarada na proveniência")
 
 
 def test_subgrupos_da_raps_nao_substituem_o_total():

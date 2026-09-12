@@ -81,7 +81,8 @@
         {%- else -%}<span class="sem-dados">sem dados</span>{%- endif -%}
       </span>
       <span class="kpi-rotulo">Municípios com atenção psicossocial</span>
-      <span class="kpi-nota">CNES — serviço 115</span>
+      <span class="kpi-nota">CNES — serviço 115, ofertado ao SUS{% if panorama.municipios_com_raps_total %}
+        · {{ panorama.municipios_com_raps_total | numero }} contando o privado{% endif %}</span>
     </div>
     <div class="kpi">
       <span class="kpi-valor">

@@ -88,6 +88,7 @@
   <div class="kpis kpis-compacto" data-cartoes>
     {% for campo in ['ICAP', 'ICRP', 'municipios_com_psicologo', 'psicologos_sus',
                      'psicologos_por_100k', 'municipios_com_raps',
+                     'municipios_com_raps_total',
                      'estabelecimentos_raps'] %}
     <div class="kpi" data-campo="{{ campo }}"
          data-valor="{{ d[campo] if d[campo] is not none else '' }}"></div>
@@ -101,7 +102,10 @@
     vinculado ao SUS. A presença é quase universal no país — 5.523 de 5.571 —,
     então o que separa os estados não é <em>ter</em>, é <em>quantos</em>: veja a
     densidade por 100 mil habitantes acima. Já a rede psicossocial, presente em
-    {{ panorama.municipios_com_raps | numero }} municípios, e o CREAS, em
+    {{ panorama.municipios_com_raps | numero }} municípios com serviço ofertado
+    <strong>ao SUS</strong>{% if panorama.municipios_com_raps_total %} —
+    {{ panorama.municipios_com_raps_total | numero }} contando também o privado
+    que declara o mesmo serviço no cadastro{% endif %}, e o CREAS, em
     {{ panorama.municipios_com_creas | numero }}, distinguem território de
     verdade.
   </p>
@@ -238,7 +242,8 @@
         <option value="concluintes">Concluintes</option>
         <option value="polos_ead">Polos EaD</option>
         <option value="psicologos_sus">Psicólogos no SUS</option>
-        <option value="estabelecimentos_raps">Estabelecimentos psicossociais</option>
+        <option value="estabelecimentos_raps">Estabelecimentos psicossociais (SUS)</option>
+        <option value="estabelecimentos_raps_total">Estabelecimentos psicossociais (declarado)</option>
         <option value="creas">Unidades de CREAS</option>
         <option value="cras">Unidades de CRAS</option>
       </select>
