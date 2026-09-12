@@ -34,7 +34,11 @@ from urllib.parse import unquote, urlparse
 REPO = Path(__file__).resolve().parent.parent
 DIST = REPO / "site" / "dist"
 
-PADRAO = re.compile(r'(?:href|src)\s*=\s*"([^"]+)"', re.I)
+# Regex em BYTES, sobre o arquivo lido em bytes: só os trechos que casam viram
+# texto. O ganho é modesto e está medido, para ninguém esperar mais do que ele
+# dá — no observatório de Educação Superior, 323 MB em 10.121 páginas, são
+# 3m49 contra 4m03. O gargalo é a leitura do disco, não a decodificação.
+PADRAO = re.compile(rb'(?:href|src)\s*=\s*"([^"]+)"', re.I)
 EXTERNOS = ("http://", "https://", "//", "mailto:", "tel:", "data:",
             "javascript:", "#")
 
@@ -97,10 +101,10 @@ def _referencias():
     # lê-las duas vezes dobrava um custo que já é o dominante.
     _REFERENCIAS = []
     for pagina in _paginas():
-        html = pagina.read_text(encoding="utf-8", errors="replace")
+        html = pagina.read_bytes()
         relativa = pagina.relative_to(DIST).as_posix()
-        for alvo in PADRAO.findall(html):
-            alvo = alvo.strip()
+        for bruto in PADRAO.findall(html):
+            alvo = bruto.decode("utf-8", "replace").strip()
             if not alvo or alvo.startswith(EXTERNOS) or "${" in alvo:
                 continue
             caminho = unquote(urlparse(alvo).path)

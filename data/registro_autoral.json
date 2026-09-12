@@ -8,8 +8,8 @@
     "obra": "Observatório Nacional da Formação em Psicologia",
     "descricao": "Sítio estático data-driven com indicadores de acesso territorial, qualidade e cobertura assistencial dos cursos de Psicologia no Brasil: formulação e cálculo dos índices ICT, E, IAF, ICAP, ICRP e ICAS, catálogo de indicadores, textos e desenho editorial."
   },
-  "registrado_em": "2026-09-12T19:47:57+00:00",
-  "git_commit_ancora": "1c663b664deac562d251dff1183f9c0205a2fa6e",
+  "registrado_em": "2026-09-12T19:47:59+00:00",
+  "git_commit_ancora": "bd9a7ea161405e9e33ca99a0595229f489143da7",
   "algoritmo": "SHA-256 sobre o conteúdo com fim de linha normalizado em LF",
   "fundamento": "Lei 9.610/1998 (direitos autorais) e Lei 9.609/1998 (programa de computador). O resumo combinado é impressão digital única do conjunto; o commit Git ancora a data no histórico versionado.",
   "como_verificar": [
@@ -23,8 +23,8 @@
   "natureza": "Declaração datada de conteúdo, com anterioridade ancorada no histórico do repositório. Permite comparar uma cópia com o original arquivo a arquivo. Não é registro em cartório nem depósito no INPI, e não substitui nenhum dos dois.",
   "escopo": "Apenas material autoral: código, textos, templates e o desenho dos índices. Não inclui os dados públicos (INEP, DATASUS, IBGE), que pertencem às respectivas fontes, nem bibliotecas de terceiros.",
   "n_arquivos": 38,
-  "bytes_totais": 493013,
-  "sha256_combinado": "2790c4142affbf812f8e429c9d4838d544137235cdef590bd3d39986a59bc13e",
+  "bytes_totais": 493332,
+  "sha256_combinado": "596e6d8e6641290aebcc2a480ec10e655b66d629e6595bac60683213e51dc651",
   "arquivos": [
     {
       "arquivo": "README.md",
@@ -238,9 +238,9 @@
     },
     {
       "arquivo": "tests/test_links.py",
-      "bytes": 7023,
-      "linhas": 177,
-      "sha256": "e5dd8c78e484e39f03804969c8ae775abb6063ca4e04eaf1f1a7133d33331799"
+      "bytes": 7342,
+      "linhas": 181,
+      "sha256": "37c4f21610aa9485585ff5d22d3dec7575069c8fc848d3ec52472dab049537db"
     },
     {
       "arquivo": "tests/test_validacao.py",
