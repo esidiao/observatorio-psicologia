@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-09-12",
+  "gerado_em": "2026-10-23",
   "fontes": {
     "censo": {
       "presente": true,
@@ -31,9 +31,9 @@
     "cnes": {
       "presente": true,
       "fonte": "Cadastro Nacional de Estabelecimentos de Saúde (CNES/DATASUS)",
-      "arquivo": "BASE_DE_DADOS_CNES_202607.ZIP",
-      "url": "ftp://ftp.datasus.gov.br/cnes/BASE_DE_DADOS_CNES_202607.ZIP",
-      "competencia": "202607",
+      "arquivo": "BASE_DE_DADOS_CNES_202609.ZIP",
+      "url": "ftp://ftp.datasus.gov.br/cnes/BASE_DE_DADOS_CNES_202609.ZIP",
+      "competencia": "202609",
       "cbo_familia": "2515",
       "cbo_ocupacoes": {
         "251505": "PSICOLOGO EDUCACIONAL",
@@ -84,28 +84,28 @@
       "st_ativo_sn_nao_filtra": "A coluna ST_ATIVO_SN de rlEstabServClass vem vazia em todas as linhas deste export, então não há como excluir serviço marcado como inativo. O filtro que existia aqui lia coluna sempre em branco e nunca excluiu nada; agora a ausência é contada e declarada.",
       "subgrupos_nao_somam_o_total": "O total conta estabelecimentos distintos com qualquer classificação do serviço 115. Como um mesmo estabelecimento pode declarar mais de uma, a soma dos três subgrupos é maior que o total — e não deve ser usada no lugar dele.",
       "tabelas_auxiliares_nao_usadas": "rlEstabAtenPsico e rlMunAtenPsico existem nesta base e NÃO foram usadas como cadastro da rede: a primeira tem cerca de 1.400 registros, bem menos que o número conhecido de CAPS, e suas colunas descrevem atributos de acolhimento (estrutura, vagas de acolhimento noturno, profissional de referência), não a existência do serviço. A existência sai de rlEstabServClass, que é tabela-fato de serviço declarado.",
-      "extraido_em": "2026-09-12",
+      "extraido_em": "2026-10-23",
       "diagnostico": {
-        "vinculos_psicologia": 168894,
+        "vinculos_psicologia": 172230,
         "vinculos_por_cbo": {
-          "251505": 480,
-          "251510": 157894,
-          "251515": 24,
-          "251520": 5599,
-          "251525": 35,
-          "251530": 768,
-          "251535": 582,
-          "251540": 624,
-          "251545": 2100,
-          "251550": 696,
-          "251555": 92
+          "251505": 474,
+          "251510": 160970,
+          "251515": 23,
+          "251520": 5688,
+          "251525": 36,
+          "251530": 771,
+          "251535": 591,
+          "251540": 637,
+          "251545": 2213,
+          "251550": 733,
+          "251555": 94
         },
-        "vinculos_em_estabelecimento_desabilitado": 311,
+        "vinculos_em_estabelecimento_desabilitado": 238,
         "vinculos_sem_cadastro": 0,
-        "servicos_psicossociais": 28372,
+        "servicos_psicossociais": 28906,
         "servicos_com_situacao_preenchida": 0,
         "st_ativo_sn_vazio_no_export": true,
-        "servicos_em_estabelecimento_desabilitado": 4427,
+        "servicos_em_estabelecimento_desabilitado": 4439,
         "servicos_sem_cadastro": 0,
         "classificacoes_nao_agrupadas": {}
       }
@@ -148,7 +148,7 @@
     "Os indicadores da rede psicossocial contam apenas estabelecimentos que ofertam o serviço AO SUS. O total declarado — que inclui a clínica privada registrada no cadastro — é publicado ao lado, nos campos terminados em `_total`: a RAPS é política pública, e serviço declarado no cadastro não é serviço público.",
     "A coluna ST_ATIVO_SN de rlEstabServClass vem vazia em todas as linhas deste export do CNES, então não há como excluir serviço marcado como inativo. O filtro que existia no extrator lia coluna sempre em branco e nunca excluiu nada; a limitação passou a ser declarada em vez de disfarçada de filtro.",
     "A rede psicossocial (serviço 115 do CNES, ATENÇÃO PSICOSSOCIAL) é publicada em três subgrupos — comunitário, moradia assistida e leito/regime fechado — e não somada num só número. Fundir as onze classificações do 115 mediria como equivalentes serviços que a política pública trata como opostos. O total conta estabelecimentos distintos, então NÃO é a soma dos três. O agrupamento em três é decisão editorial deste observatório, não classificação oficial do Ministério da Saúde.",
-    "A cobertura por força de trabalho está quase saturada: 5523 dos 5571 municípios têm psicólogo vinculado ao SUS. O ICAP continua medindo diferença real — há estado com um em cada oito municípios sem nenhum psicólogo — mas separa pouco. Quem quiser comparar a densidade das redes deve olhar psicólogos por 100 mil habitantes, que varia bem mais.",
+    "A cobertura por força de trabalho está quase saturada: 5528 dos 5571 municípios têm psicólogo vinculado ao SUS. O ICAP continua medindo diferença real — há estado com um em cada oito municípios sem nenhum psicólogo — mas separa pouco. Quem quiser comparar a densidade das redes deve olhar psicólogos por 100 mil habitantes, que varia bem mais.",
     "Não existe contagem de psicólogos no SUAS. O CadSUAS publica total de profissionais por unidade, sem abertura por ocupação — não há equivalente do CBO do CNES. A cobertura socioassistencial mede presença de CREAS, não presença de psicólogo nele.",
     "O CRAS existe em 5559 dos 5571 municípios. Uma fração que vale praticamente 1 em toda UF não ordena nada, então o CRAS é publicado como contagem e densidade, e só o CREAS vira índice de cobertura.",
     "A fonte socioassistencial é o CadSUAS pela API MI Social da SAGI, não o microdado do Censo SUAS: em setembro de 2026 o catálogo de microdados da SAGI responde com aviso de indisponibilidade por restrição de período eleitoral, e o conjunto CadSUAS no Portal Brasileiro de Dados Abertos exige chave de API."

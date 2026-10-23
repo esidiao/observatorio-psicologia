@@ -8,8 +8,8 @@
     "obra": "Observatório Nacional da Formação em Psicologia",
     "descricao": "Sítio estático data-driven com indicadores de acesso territorial, qualidade e cobertura assistencial dos cursos de Psicologia no Brasil: formulação e cálculo dos índices ICT, E, IAF, ICAP, ICRP e ICAS, catálogo de indicadores, textos e desenho editorial."
   },
-  "registrado_em": "2026-09-12T19:47:59+00:00",
-  "git_commit_ancora": "bd9a7ea161405e9e33ca99a0595229f489143da7",
+  "registrado_em": "2026-10-23T23:06:46+00:00",
+  "git_commit_ancora": "9cbc2f26fca6e5a764ce9b8fc1c613e3359cae04",
   "algoritmo": "SHA-256 sobre o conteúdo com fim de linha normalizado em LF",
   "fundamento": "Lei 9.610/1998 (direitos autorais) e Lei 9.609/1998 (programa de computador). O resumo combinado é impressão digital única do conjunto; o commit Git ancora a data no histórico versionado.",
   "como_verificar": [
@@ -23,14 +23,14 @@
   "natureza": "Declaração datada de conteúdo, com anterioridade ancorada no histórico do repositório. Permite comparar uma cópia com o original arquivo a arquivo. Não é registro em cartório nem depósito no INPI, e não substitui nenhum dos dois.",
   "escopo": "Apenas material autoral: código, textos, templates e o desenho dos índices. Não inclui os dados públicos (INEP, DATASUS, IBGE), que pertencem às respectivas fontes, nem bibliotecas de terceiros.",
   "n_arquivos": 38,
-  "bytes_totais": 493332,
-  "sha256_combinado": "596e6d8e6641290aebcc2a480ec10e655b66d629e6595bac60683213e51dc651",
+  "bytes_totais": 493690,
+  "sha256_combinado": "337d8119a493a06fa3977a65c55239e3a1f311b585a0fa2eb3efe02890e50fbf",
   "arquivos": [
     {
       "arquivo": "README.md",
       "bytes": 14369,
       "linhas": 304,
-      "sha256": "29fd05d3716b6dff00a8e80d983ccbe9cc6d6a95db272f404fbffdf2a71398fb"
+      "sha256": "4f103c60ea529013eb2522b8c536d83d8939e95042044a6d95e14465ee6fc7d6"
     },
     {
       "arquivo": "SECURITY.md",
@@ -66,7 +66,7 @@
       "arquivo": "etl/extrair_cnes.py",
       "bytes": 31469,
       "linhas": 676,
-      "sha256": "a35c8bb8aa0d3643fb64edf5d1f019146c75cf7b25e8c090c41f1fcce28972d7"
+      "sha256": "a3d7b9aad65d58fba20986c6eacec049ee7b802d0ca7be08780b7c789c146ea1"
     },
     {
       "arquivo": "etl/extrair_cpc.py",
@@ -126,7 +126,7 @@
       "arquivo": "site/catalogo.py",
       "bytes": 34667,
       "linhas": 673,
-      "sha256": "880db280cdb3f889d4a8477e0fcf06c1d09166452d15766d2b1bc49e9f82291b"
+      "sha256": "acdf578486808b5a90db853410b487f3774ee8bbd2c84a6ee9c7029363129ca8"
     },
     {
       "arquivo": "site/estatistica.py",
@@ -208,9 +208,9 @@
     },
     {
       "arquivo": "site/templates/uf.html.j2",
-      "bytes": 17038,
-      "linhas": 404,
-      "sha256": "1df6bb9ac2c407d5d1b73f533fb0c2b3e5fa80723aeef0d2db33e0c7ec7e9798"
+      "bytes": 17124,
+      "linhas": 406,
+      "sha256": "735a9523d2aed14cb14408f3dcdaf15aa36a822cfd3cfd067bb72a79f332f4fc"
     },
     {
       "arquivo": "site/static/css/style.css",
@@ -244,9 +244,9 @@
     },
     {
       "arquivo": "tests/test_validacao.py",
-      "bytes": 22316,
-      "linhas": 533,
-      "sha256": "a5765ec9b3545d698cd0b3137ef9bd55e1ec8533822d0894aef3de289d969d49"
+      "bytes": 22588,
+      "linhas": 537,
+      "sha256": "b23b56ae06c2cdb79e1df1a4f4f30a61aa7b6e2b3e790efbbbd2824128bf421e"
     },
     {
       "arquivo": ".github/workflows/ci.yml",

@@ -99,7 +99,9 @@
   <p class="nota">
     {{ d.municipios_com_psicologo | numero }} dos
     {{ d.municipios_total | numero }} municípios de {{ nome_uf }} têm psicólogo
-    vinculado ao SUS. A presença é quase universal no país — 5.523 de 5.571 —,
+    vinculado ao SUS. A presença é quase universal no país —
+    {{ panorama.municipios_com_psicologo | numero }} de
+    {{ panorama.municipios_total | numero }} —,
     então o que separa os estados não é <em>ter</em>, é <em>quantos</em>: veja a
     densidade por 100 mil habitantes acima. Já a rede psicossocial, presente em
     {{ panorama.municipios_com_raps | numero }} municípios com serviço ofertado

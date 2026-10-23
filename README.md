@@ -25,15 +25,15 @@ Compartilha o método e o design system; não compartilha código, dados nem dep
 | IES distintas | 1.032 | 129 |
 | Cursos avaliados | 746, no **CPC 2022** | 74, no CPC 2023 |
 
-Fontes de cobertura assistencial, medidas no CNES 202607 e no CadSUAS 202608:
+Fontes de cobertura assistencial, medidas no CNES 202609 e no CadSUAS 202608:
 
 | | |
 |---|---|
-| Municípios com psicólogo no SUS | 5.523 de 5.571 |
+| Municípios com psicólogo no SUS | 5.528 de 5.571 |
 | Psicólogos vinculados ao SUS | 71.542 profissionais distintos |
-| Municípios com atenção psicossocial **ofertada ao SUS** | 3.733 |
-| Estabelecimentos com serviço 115 **ao SUS** | 12.607 |
-| Os mesmos, declarados (SUS ou privado) | 3.797 · 22.481 |
+| Municípios com atenção psicossocial **ofertada ao SUS** | 3.755 |
+| Estabelecimentos com serviço 115 **ao SUS** | 12.783 |
+| Os mesmos, declarados (SUS ou privado) | 3.818 · 22.921 |
 | Municípios com CRAS · CREAS | 5.559 · 2.758 |
 | Unidades de CRAS · CREAS | 8.977 · 3.039 |
 
@@ -114,7 +114,7 @@ respostas, e nenhuma fonte única as dá:
 * **ICRP — rede psicossocial.** Municípios com estabelecimento que oferta **ao SUS** o
   serviço 115. A RAPS é política pública, e estabelecimento privado que declara o
   mesmo serviço no cadastro não faz parte dela: medido, sem esse filtro a contagem
-  sobe de 12.607 para 22.481 estabelecimentos — 44% do que seria publicado como
+  sobe de 12.783 para 22.921 estabelecimentos — 44% do que seria publicado como
   rede pública não atende pelo SUS. O total declarado sai ao lado, nos campos
   terminados em `_total`.
 
@@ -184,7 +184,7 @@ conjunto CadSUAS no Portal Brasileiro de Dados Abertos exige chave de API (401).
 Social publica o mesmo cadastro agregado por município, é pública, e é dela que se lê — com
 a diferença declarada na proveniência.
 
-**O ICAP está quase saturado.** 5.523 dos 5.571 municípios têm psicólogo vinculado ao SUS.
+**O ICAP está quase saturado.** 5.528 dos 5.571 municípios têm psicólogo vinculado ao SUS.
 O índice continua medindo diferença real — 87,5% no Amapá contra 100% em São Paulo, ou
 seja, um em cada oito municípios amapaenses sem nenhum psicólogo — mas separa pouco. Quem
 quiser comparar a densidade das redes deve olhar **psicólogos por 100 mil habitantes**, que

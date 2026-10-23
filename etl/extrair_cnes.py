@@ -5,7 +5,7 @@ lendo a base mensal do DATASUS por FTP sem baixar os 700 MB do ZIP.
 
 Uso:
     python etl/extrair_cnes.py                      # competência mais recente
-    python etl/extrair_cnes.py --competencia 202607
+    python etl/extrair_cnes.py --competencia 202609
     python etl/extrair_cnes.py --listar             # competências disponíveis
     python etl/extrair_cnes.py --rebaixar           # ignora o cache e rebaixa
 

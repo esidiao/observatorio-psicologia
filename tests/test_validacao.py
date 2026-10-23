@@ -2,7 +2,7 @@
 tests/test_validacao.py
 Integridade do conjunto publicado, contra âncoras conhecidas.
 
-As âncoras foram apuradas no Censo 2024, no CPC 2022, no CNES 202607 e no
+As âncoras foram apuradas no Censo 2024, no CPC 2022, no CNES 202609 e no
 CadSUAS 202608, lendo os arquivos originais. Servem como teste de REGRESSÃO: se
 o pipeline passar a produzir outra coisa, o mais provável é defeito no
 pipeline, não notícia nos dados. Uma edição nova das fontes muda os números de
@@ -19,7 +19,7 @@ DATA = REPO / "data"
 
 CENSO = 2024
 CICLO_CPC = "2022"
-COMPETENCIA_CNES = "202607"
+COMPETENCIA_CNES = "202609"
 ANOMES_SUAS = "202608"
 
 # ------------------------------------------------------- âncoras: Censo 2024
@@ -50,15 +50,19 @@ CONCLUINTES_PARTICIPANTES = 39135
 # -------------------------------------------------------- âncoras: CadSUAS
 CRAS_TOTAL = 8977
 CREAS_TOTAL = 3039
-# --------------------------------------------------- âncoras: CNES 202607
+# --------------------------------------------------- âncoras: CNES 202609
+# Trocar de competência MUDA estes números, e é por isso que a troca falha
+# o teste em vez de passar calada: cada valor foi reconferido contra a
+# competência declarada acima, não ajustado até o teste passar.
 # A rede psicossocial nunca teve âncora neste projeto — só o CadSUAS tinha. Foi
 # por isso que a contagem seguiu incluindo estabelecimento privado até ser
-# corrigida, e a mudança de 3.797 para 3.733 municípios não acusaria nada.
-MUNICIPIOS_COM_PSICOLOGO = 5523
-MUNICIPIOS_COM_RAPS = 3733
-MUNICIPIOS_COM_RAPS_TOTAL = 3797
-ESTABELECIMENTOS_RAPS = 12607
-ESTABELECIMENTOS_RAPS_TOTAL = 22481
+# corrigida, e a mudança de 3.797 para 3.733 municípios não acusaria nada
+# (números da 202607, quando o defeito foi encontrado).
+MUNICIPIOS_COM_PSICOLOGO = 5528
+MUNICIPIOS_COM_RAPS = 3755
+MUNICIPIOS_COM_RAPS_TOTAL = 3818
+ESTABELECIMENTOS_RAPS = 12783
+ESTABELECIMENTOS_RAPS_TOTAL = 22921
 
 MUNICIPIOS_COM_CRAS = 5559
 MUNICIPIOS_COM_CREAS = 2758
@@ -278,7 +282,7 @@ def test_tres_coberturas_existem_e_sao_separadas():
 
 def test_ancoras_da_rede_psicossocial():
     """
-    Totais conhecidos do CNES 202607, como teste de regressão.
+    Totais conhecidos do CNES 202609, como teste de regressão.
 
     Publicar cobertura sem âncora é publicar um número que pode mudar sozinho:
     a contagem da RAPS incluía estabelecimento privado, e nada nesta bateria
@@ -303,7 +307,7 @@ def test_rede_psicossocial_publica_e_menor_que_a_declarada():
 
     A RAPS é política pública, e estabelecimento privado que declara o serviço
     115 no cadastro não faz parte dela. Medido: sem o filtro, a contagem sobe de
-    12.607 para 22.481 estabelecimentos — 44% do que seria publicado como rede
+    12.783 para 22.921 estabelecimentos — 44% do que seria publicado como rede
     pública não atende pelo SUS. Se os dois números empatarem, o filtro caiu.
     """
     ufs = _ler("nacional.json")["ufs"]
@@ -371,7 +375,7 @@ def test_icap_esta_quase_saturado_e_isso_esta_dito():
     """
     Registra a saturação do ICAP, que muda como ele deve ser lido.
 
-    5.523 dos 5.571 municípios têm psicólogo vinculado ao SUS. O índice
+    5.528 dos 5.571 municípios têm psicólogo vinculado ao SUS. O índice
     continua legítimo — 87,5% no Amapá contra 100% em São Paulo é diferença
     real, e um em cada oito municípios amapaenses sem nenhum psicólogo é um
     fato —, mas ele separa pouco, e quem o ler como se fosse o retrato da rede

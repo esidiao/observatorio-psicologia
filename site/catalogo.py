@@ -92,7 +92,7 @@ INDICADORES = [
        "capaz de absorver quem se forma. Conta pela família CBO 2515, por "
        "prefixo: casar por texto capturaria professores e pesquisadores de "
        "Psicologia, que não fazem assistência. Leia junto com a densidade: a "
-       "presença é quase universal — 5.523 dos 5.571 municípios —, então este "
+       "presença é quase universal — 5.528 dos 5.571 municípios —, então este "
        "índice separa pouco os estados, e é a quantidade de psicólogos por 100 "
        "mil habitantes que mostra onde a rede é de fato densa.",
        "0 a 1", "maior", "CNES/DATASUS", dec=3, min=0, max=1,

@@ -13,9 +13,9 @@
    "concluintes": 476,
    "polos_ead": 0,
    "tem_curso_presencial": true,
-   "psicologos_sus": 690,
+   "psicologos_sus": 697,
    "estabelecimentos_raps": 41,
-   "estabelecimentos_raps_total": 50,
+   "estabelecimentos_raps_total": 51,
    "servicos_raps": [
     "115/002",
     "115/005",
@@ -40,7 +40,7 @@
    "concluintes": 22,
    "polos_ead": 0,
    "tem_curso_presencial": true,
-   "psicologos_sus": 109,
+   "psicologos_sus": 115,
    "estabelecimentos_raps": 6,
    "estabelecimentos_raps_total": 7,
    "servicos_raps": [
@@ -64,14 +64,14 @@
    "concluintes": 64,
    "polos_ead": 0,
    "tem_curso_presencial": true,
-   "psicologos_sus": 44,
-   "estabelecimentos_raps": 8,
-   "estabelecimentos_raps_total": 9,
+   "psicologos_sus": 42,
+   "estabelecimentos_raps": 7,
+   "estabelecimentos_raps_total": 8,
    "servicos_raps": [
     "115/002",
     "115/003"
    ],
-   "raps_comunitaria": 7,
+   "raps_comunitaria": 6,
    "raps_residencial": null,
    "raps_internacao": 1,
    "cras": 1,
@@ -113,7 +113,7 @@
    "concluintes": 1,
    "polos_ead": 1,
    "tem_curso_presencial": false,
-   "psicologos_sus": 39,
+   "psicologos_sus": 41,
    "estabelecimentos_raps": 3,
    "estabelecimentos_raps_total": 3,
    "servicos_raps": [
