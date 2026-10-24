@@ -8,8 +8,8 @@
     "obra": "Observatório Nacional da Formação em Psicologia",
     "descricao": "Sítio estático data-driven com indicadores de acesso territorial, qualidade e cobertura assistencial dos cursos de Psicologia no Brasil: formulação e cálculo dos índices ICT, E, IAF, ICAP, ICRP e ICAS, catálogo de indicadores, textos e desenho editorial."
   },
-  "registrado_em": "2026-10-23T23:06:46+00:00",
-  "git_commit_ancora": "9cbc2f26fca6e5a764ce9b8fc1c613e3359cae04",
+  "registrado_em": "2026-10-24T12:11:07+00:00",
+  "git_commit_ancora": "fccfc6d1b7433999db212fe849a810446843a0b9",
   "algoritmo": "SHA-256 sobre o conteúdo com fim de linha normalizado em LF",
   "fundamento": "Lei 9.610/1998 (direitos autorais) e Lei 9.609/1998 (programa de computador). O resumo combinado é impressão digital única do conjunto; o commit Git ancora a data no histórico versionado.",
   "como_verificar": [
@@ -23,14 +23,14 @@
   "natureza": "Declaração datada de conteúdo, com anterioridade ancorada no histórico do repositório. Permite comparar uma cópia com o original arquivo a arquivo. Não é registro em cartório nem depósito no INPI, e não substitui nenhum dos dois.",
   "escopo": "Apenas material autoral: código, textos, templates e o desenho dos índices. Não inclui os dados públicos (INEP, DATASUS, IBGE), que pertencem às respectivas fontes, nem bibliotecas de terceiros.",
   "n_arquivos": 38,
-  "bytes_totais": 493690,
-  "sha256_combinado": "337d8119a493a06fa3977a65c55239e3a1f311b585a0fa2eb3efe02890e50fbf",
+  "bytes_totais": 494374,
+  "sha256_combinado": "37f925ef3c494e619c3e363d6db65da6cadc6f703f2139851a47d9883eb8d24f",
   "arquivos": [
     {
       "arquivo": "README.md",
-      "bytes": 14369,
-      "linhas": 304,
-      "sha256": "4f103c60ea529013eb2522b8c536d83d8939e95042044a6d95e14465ee6fc7d6"
+      "bytes": 15053,
+      "linhas": 314,
+      "sha256": "18817635b0a9e48be4526d4ebc6943c4c140fb2ea27e3a66444aa8b7b52c5e8e"
     },
     {
       "arquivo": "SECURITY.md",

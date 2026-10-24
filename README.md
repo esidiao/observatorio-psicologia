@@ -240,6 +240,16 @@ das conexões que usam `REST`. Ela guarda as fatias já filtradas em
 `etl/dados/cnes_<competência>/`, então reprocessar a agregação depois é instantâneo. Use
 `--pular-cnes` quando estiver mexendo em outra parte.
 
+Se for atualizar também os observatórios de **Fonoaudiologia** e **Odontologia**, que leem
+as mesmas tabelas-fato do CNES, existe uma ferramenta que produz as três fatias numa
+leitura só — cerca de uma hora em vez de três:
+[observatorio-ferramentas](https://github.com/esidiao/observatorio-ferramentas).
+
+**Este repositório não depende dela.** O `etl/` aqui é completo e autônomo, e o pipeline
+acima roda sozinho, do zero, sem nada instalado ao lado. A ferramenta apenas preenche antes
+o cache de `etl/dados/cnes_<competência>/`; encontrando as fatias prontas, o extrator daqui
+as aproveita e segue. Quem mantém só este observatório pode ignorar o parágrafo inteiro.
+
 O pipeline encadeia extração -> índices -> enriquecimento -> **conferência de riqueza** ->
 validação, e só grava se tudo passar. A conferência de riqueza compara o número de campos
 por UF com o que está em `git show HEAD` e aborta se o novo resultado for mais pobre —
